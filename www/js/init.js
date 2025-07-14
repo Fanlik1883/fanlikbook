@@ -16,7 +16,7 @@ class VisualPanelClass {
         this.ocenka_n = document.getElementById("ocenka_n")
         this.text_ru = document.getElementById("text_ru")
         this.text_en = document.getElementById("text_en")
-        this.voiceInEl = document.getElementById("voice")
+        this.voiceRusSelect = document.getElementById("voiceRusSelect")
         this.voiceEngSelect = document.getElementById("voiceEngSelect")
         this.list_files = document.getElementById("list_files")
         this.list_reader = document.getElementById('list_reader');
@@ -37,13 +37,13 @@ class VisualPanelClass {
         this.rateRusRange.addEventListener('change', updateOutputs);
         this.rateEngRange.addEventListener("change", updateOutputs)
         setTimeout(function() {
-            this.voiceInEl.addEventListener("change", CookiesUp.updateVoice)
+            this.voiceRusSelect.addEventListener("change", CookiesUp.updateVoice)
             this.voiceEngSelect.addEventListener("change", CookiesUp.updateVoice)
         },500)
         this.NumberLinesBook0.addEventListener("change", function (event) {
-            Book.num = Number(this.NumberLinesBook0.value)
-            this.NumberLinesBook.value = this.NumberLinesBook0.value
-            this.text_ru.textContent = Book.book_mass_rus[Book.num]
+            Book.num = Number(Panel.NumberLinesBook0.value)
+            Panel.NumberLinesBook.value = Panel.NumberLinesBook0.value
+            Panel.text_ru.textContent = Book.book_mass_rus[Book.num]
             Panel.text_en.textContent = Book.book_mass_eng[Book.num]
             CookiesUp.setCookieMy(Book.name_file, Book.num)
             numNext = Book.num + 1 }
@@ -227,18 +227,18 @@ class CookiesClass {
         });
     }
     start_cookie() {
-        this.voiceEngSelect.selectedIndex = getCookie('voice0_num');
-        this.rateEngRange.value = getCookie("rate0")
-        this.rateEngOut.textContent = this.rateEngRange.value
-        this.voiceInEl.selectedIndex = getCookie('voice_num');
-        this.rateRusRange.value = getCookie("rate")
-        this.rateRusOut.textContent = this.rateRusRange.value
+        Panel.voiceEngSelect.selectedIndex = getCookie('voice0_num');
+        Panel.rateEngRange.value = getCookie("rate0")
+        Panel.rateEngOut.textContent = Panel.rateEngRange.value
+        Panel.voiceRusSelect.selectedIndex = getCookie('voice_num');
+        Panel.rateRusRange.value = getCookie("rate")
+        Panel.rateRusOut.textContent = Panel.rateRusRange.value
     }
 
  updateVoice() {
     // Если изменение голоса
-    this.setCookieMy("voice0_num", this.voiceEngSelect.value)
-    this.setCookieMy("voice_num", this.voiceInEl.value)
+    this.setCookieMy("voice0_num", Panel.voiceEngSelect.value)
+    this.setCookieMy("voice_num", Panel.voiceRusSelect.value)
 }
 
 
@@ -560,7 +560,7 @@ class SpeakClass {
         this.book_id
         this.ReadList = new Array();
         this.ReadListCout = 10;// Сколько строчек попадают в массив для чтения одного языка
-        setTimeout(this.ttsList, 2000);
+        setTimeout(this.ttsList, 3000);
     }
 
 
@@ -593,7 +593,7 @@ class SpeakClass {
     speakTextRu(text, index) {
             TTS.speak({
                 text: text,
-                locale: Panel.voiceInEl[Panel.voiceInEl.selectedIndex].label,
+                locale: Panel.voiceRusSelect[Panel.voiceRusSelect.selectedIndex].label,
                 rate: Panel.rateRusRange.value,
                 cancel: false
             }).then(function () {
@@ -672,7 +672,7 @@ class SpeakClass {
         const ruVoices = voicesList.filter(voicesList => voicesList.language === "ru_RU");
         const enVoices = voicesList.filter(voicesList => voicesList.language === "en_US");
         ruVoices.forEach((voicesList,index)=>{
-            Panel.voiceInEl.options[index] = new Option(voicesList.identifier,index)
+            Panel.voiceRusSelect.options[index] = new Option(voicesList.identifier,index)
         }
         )
 
@@ -696,7 +696,7 @@ class SpeakClass {
 
 
 
-if (!getCookie("book_id")) Book.book_id = 0;
+
 
 
 var UserId = getCookie("UserId");
@@ -724,7 +724,7 @@ var noSleepx = 0
 
 
 
-$.ajaxSetup({ timeout: 15000 })
+$.ajaxSetup({ timeout: 5000 })
 
 
 //*******************************
