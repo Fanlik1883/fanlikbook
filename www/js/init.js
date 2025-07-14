@@ -36,13 +36,14 @@ class VisualPanelClass {
         this.how = 0
         this.rateRusRange.addEventListener('change', updateOutputs);
         this.rateEngRange.addEventListener("change", updateOutputs)
-        this.voiceInEl.addEventListener("change", CookiesUp.updateVoice)
-        this.voiceEngSelect.addEventListener("change", CookiesUp.updateVoice)
-
+        setTimeout(function() {
+            this.voiceInEl.addEventListener("change", CookiesUp.updateVoice)
+            this.voiceEngSelect.addEventListener("change", CookiesUp.updateVoice)
+        },500)
         this.NumberLinesBook0.addEventListener("change", function (event) {
-            Book.num = Number(Panel.NumberLinesBook0.value)
-            Panel.NumberLinesBook.value = Panel.NumberLinesBook0.value
-            Panel.text_ru.textContent = Book.book_mass_rus[Book.num]
+            Book.num = Number(this.NumberLinesBook0.value)
+            this.NumberLinesBook.value = this.NumberLinesBook0.value
+            this.text_ru.textContent = Book.book_mass_rus[Book.num]
             Panel.text_en.textContent = Book.book_mass_eng[Book.num]
             CookiesUp.setCookieMy(Book.name_file, Book.num)
             numNext = Book.num + 1 }
@@ -195,10 +196,10 @@ class VisualPanelClass {
         }
 
         StartPanelText = function () {
-            if (Panel.Htrans0.checked == true) { Panel.textPanelRU.style.display = 'none' }
-            else if (Panel.Htrans0.checked == false) Panel.textPanelRU.style.display = ''
-            if (Panel.Htrans.checked == true) { Panel.textPanelEN.style.display = 'none' }
-            else if (Panel.Htrans.checked == false) Panel.textPanelEN.style.display = ''
+            if (this.Htrans0.checked == true) { this.textPanelRU.style.display = 'none' }
+            else if (this.Htrans0.checked == false) this.textPanelRU.style.display = ''
+            if (this.Htrans.checked == true) { this.textPanelEN.style.display = 'none' }
+            else if (this.Htrans.checked == false) this.textPanelEN.style.display = ''
         }
 
         }
@@ -208,7 +209,7 @@ class CookiesClass {
         this.updateCookieState()
         this.checkboxes = ['trans', 'trans0', 'trans1', 'Htrans', 'Htrans0'];
         this.restoreCheckboxState()
-        setTimeout(this.start_cookie(),2500)
+
     }
     updateCookieState() {
         document.getElementById('trans').onchange = function () { CookiesUp.setCookieMy('trans', document.getElementById('trans').checked.toString()); }
@@ -226,18 +227,18 @@ class CookiesClass {
         });
     }
     start_cookie() {
-        Panel.voiceEngSelect.selectedIndex = getCookie('voice0_num');
-        Panel.rateEngRange.value = getCookie("rate0")
-        Panel.rateEngOut.textContent = Panel.rateEngRange.value
-        Panel.voiceInEl.selectedIndex = getCookie('voice_num');
-        Panel.rateRusRange.value = getCookie("rate")
-        Panel.rateRusOut.textContent = Panel.rateRusRange.value
+        this.voiceEngSelect.selectedIndex = getCookie('voice0_num');
+        this.rateEngRange.value = getCookie("rate0")
+        this.rateEngOut.textContent = this.rateEngRange.value
+        this.voiceInEl.selectedIndex = getCookie('voice_num');
+        this.rateRusRange.value = getCookie("rate")
+        this.rateRusOut.textContent = this.rateRusRange.value
     }
 
  updateVoice() {
     // Если изменение голоса
-    this.setCookieMy("voice0_num", Panel.voiceEngSelect.value)
-    this.setCookieMy("voice_num", Panel.voiceInEl.value)
+    this.setCookieMy("voice0_num", this.voiceEngSelect.value)
+    this.setCookieMy("voice_num", this.voiceInEl.value)
 }
 
 
@@ -526,7 +527,7 @@ class MainBookClass {
 
 class TranslateBookClass {
     constructor() {
-        setTimeout(function() {if (Panel.Translate.checked==true) {updateReadList();TranslateBook.TranslateNum(Book.num);}}, 1400)
+      
          this.lang0 = "ru"
          this.lang1 = "en"
         }
@@ -685,12 +686,9 @@ class SpeakClass {
 
 }
 
+
  var voicesList=[];
-const Panel = new VisualPanelClass;
-const CookiesUp = new CookiesClass;
-const Book = new MainBookClass;
-const Speeker = new SpeakClass;
-const TranslateBook = new TranslateBookClass;
+
 
 
 
@@ -736,7 +734,6 @@ const queryOpts = {
     allowWithoutGesture: false
 }
 const permissionStatus = navigator.permissions.query(queryOpts)
-Panel.GetListFile()
 var lastTime = null; // переменная для хранения времени последнего запуска функции
 $("body").prepend("<div id='PleaseWait' name='PleaseWait' style='display: none;position: absolute;top: 50%;right: 50%;'><img src='img/load.gif' width='50' height='50'/></div>");
 
@@ -786,3 +783,25 @@ let TrimText = function (text) {
         return ''
 }
 
+
+
+const CookiesUp = new CookiesClass;
+const Panel = new VisualPanelClass;
+
+const Book = new MainBookClass;
+const Speeker = new SpeakClass;
+const TranslateBook = new TranslateBookClass;
+setTimeout(function() {
+CookiesUp.start_cookie()
+if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатывает
+
+    handleOpenURL = function(url) {
+        const idRegex = /id=(\d+)/; 
+        const match = url.match(idRegex);
+        Book.book_id=match[1];
+        location.href='index.html'
+     };
+
+},200)
+
+setTimeout(function() {if (Panel.Translate.checked==true) {updateReadList();TranslateBook.TranslateNum(Book.num);}}, 1400)

@@ -1,5 +1,5 @@
 
-if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатывает
+
 
 function updateReadList() {
     i = 0;

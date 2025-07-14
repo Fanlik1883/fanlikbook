@@ -1,104 +1,28 @@
 class ViewBookClass {
     constructor() {
+        this.BookList()
 
     }
-
-}
-
-var UserName = getCookie("UserName");
-var UserHash = getCookie("UserHash");
-
-class CookiesClass {
-    constructor() {
-        this.restoreCheckboxState()
-        setTimeout(this.start_cookie(),2500)
-    }
-
-}
-
-
-var step = getCookie("step");if (step === undefined) {step = 0; }
-var type = getCookie("type");if (type === undefined) {type = 0; }
-var rate = getCookie("rate");if (rate === undefined) {rate = false; }
-var year = getCookie("year");if (year === undefined) {year = 0; }
-var datas = getCookie("datas");if (datas === undefined) {datas = 0; }
-rate = (rate === "true");
-
-
-var selectType = document.getElementById('typeRazdel');
-
-for (let i = 0; i < selectType.options.length; i++) {
-  if (selectType.options[i].value === type) {
-      selectType.selectedIndex = i;
-      break;
-  }
-}
-
-
-selectType.addEventListener('change', function() {
-    var selectedValue = this.value;
-    if (selectedValue) {
-        SelectType(selectedValue);
-    }
-});
-
-var selectYear = document.getElementById('year');
-
-for (let i = 0; i < selectYear.options.length; i++) {
-  if (selectYear.options[i].value === year) {
-      selectYear.selectedIndex = i;
-      break;
-  }
-}
-
-
-selectYear.addEventListener('change', function() {
-    var selectedValue = this.value;
-    if (selectedValue) {
-        SelectYear(selectedValue);
-    }
-});
-selectRate=document.getElementById('rate');
-selectRate.addEventListener('change', SelectRate);
-selectRate.checked = rate;
-function SelectType(value) {
-    setCookieMy('type',value);
-    location.reload();
-}
-function SelectYear(value) {
-    setCookieMy('year',value);
-    location.reload();
-}
-
-function SelectRate() {
-    setCookieMy('rate',selectRate.checked);
-    location.reload();
-}
-function SelectType(value,datas) {
-    setCookieMy('type',value);
-    setCookieMy('datas',datas);
-    location.reload();
-}
-
-
-     BookList()
-            function BookList() {
+     BookList() {
                 let params = new URLSearchParams(document.location.search);
                 var req_out = document.getElementById('ViewPort');
-                if (rate==true) var rateR=3
-                else  var rateR=0
+                if (Data.rateBook===true) var rateR=3;
+                else  var rateR=0;
+                if(params.get('AvtorId')){Data.datas=params.get('AvtorId');Data.type=7;}
+                if(params.get('SeqId')){Data.datas=params.get('SeqId');Data.type=8;}
+
                 $.ajaxSetup({timeout: 10000});
                 var finds = '';
-                $.post('https://allfilmbook.ru/API/book/list/', { UserName: UserName, UserHash: UserHash, type: type, rate: rateR , year: year, step: step, data:datas}).success(function (data) {
+                $.post('https://allfilmbook.ru/API/book/list/', { UserName: UserName, UserHash: UserHash, type: Data.type, rate: rateR , year: Data.year, step: Data.step, data: Data.datas}).success(function (data) {
             
-                    json = JSON.parse(data);
+                   var json = JSON.parse(data);
                     if (json.length === 0) {
               } else {
                     json.forEach(function (item, i, json) {
                         let liLast = document.createElement('div');
                         liLast.className = "MovieCardFace";
                         liLast.id = 'Book_'+item['book_id'];
-                        liLast.addEventListener('click', function() { showDesc(item['book_id']); });
+                        liLast.addEventListener('click', function() { ViewBook.showDesc(item['book_id']); });
                       
                         liLast.innerHTML = "<img src='"+item['image']+"' alt='"+item['title']+"' class='MovesPicFace'>";
                         liLast.innerHTML += "<div class='short-infobar' id='name_"+item['book_id']+"'><span class='short-quality'>"+item['title']+"</span></div>";
@@ -116,9 +40,9 @@ function SelectType(value,datas) {
             
             }
 
-function GetDesc(n){
+ GetDesc(n){
     $.get('https://allfilmbook.ru/API/book/description/', { n: n}).done(function (data) {
-		json = JSON.parse(data);
+		var json = JSON.parse(data);
         if (json.length === 0) {
                       //  req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
                     } else {
@@ -126,9 +50,9 @@ function GetDesc(n){
         var req_out = document.getElementById('desc_'+n);
 		json.forEach(function (item, i, json) {
             req_out.innerHTML='<img  src=\'img/read.png\' onclick="openBook('+n+')" class=\'bottons\'>';
-            if(type==3)  req_out.innerHTML+='<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>';
-            if(type==4)  req_out.innerHTML+='<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>';
-            if(type==1){
+            if(Data.type==3 )  req_out.innerHTML+='<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>';
+            if(Data.type==4)  req_out.innerHTML+='<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>';
+            if(Data.type==1 || Data.type==5){
                 req_out.innerHTML+='<img  src=\'img/add-icon-png-2468.png\' id="bottonAddFavorite_'+n+'" onclick="addFavoriteBook('+n+')" class=\'bottons\'><img  src=\'img/add-icon-png-2468.png\' onclick="addWaitBook('+n+')" class=\'bottons\'>';
             }
            req_out.innerHTML+="<br>";
@@ -138,7 +62,7 @@ function GetDesc(n){
             AvtorId=items['AvtorId'];
             name=items['name'];
             rating=items['rating'];
-            req_out.innerHTML+="<a href='avtor.html?id="+AvtorId+"' >"+name+"("+rating+")</a><br>"
+            req_out.innerHTML+="<a href='list.html?AvtorId="+AvtorId+"' >"+name+"("+rating+")</a><br>"
            })
 
            var seqId,seqDesc;
@@ -146,7 +70,7 @@ function GetDesc(n){
            seqMap.forEach(function (items, i, seqMap) {
             seqId=items['seqId'];
             seqDesc=items['seqDesc'];
-            req_out.innerHTML+="<a href='seq.html?id="+seqId+"' >"+seqDesc+"</a>"
+            req_out.innerHTML+="<a href='list.html?SeqId="+seqId+"' >"+seqDesc+"</a>"
            })
 
 
@@ -167,15 +91,10 @@ function GetDesc(n){
 
 }
 
-function openBook (id){
-setCookieMy('book_id', id); 
-location.href='index.html';
-}
-
-function showDesc (id){
+ showDesc (id){
   
     if(document.getElementById("desc_"+id).innerHTML==''){
-        GetDesc(id);
+        this.GetDesc(id);
 
 		setCookieMy('SaveiDF',id);
 
@@ -198,6 +117,90 @@ function showDesc (id){
         }
 }
 }
+}
+
+var UserName = getCookie("UserName");
+var UserHash = getCookie("UserHash");
+
+class DataClass {
+    constructor() {
+this.step = getCookie("step");if (this.step === undefined) {this.step = 0; }
+this.type = getCookie("type");if (this.type === undefined) {this.type = 0; }
+this.rateBook = getCookie("rate");if (this.rateBook === undefined) {this.rateBook = false; }
+this.year = getCookie("year");if (this.year === undefined) {this.year = 0; }
+if (getCookie("datas") === "undefined") this.datas=0; else this.datas = getCookie("datas");
+this.rateBook = (this.rateBook === "true");
+    }
+
+}
+const Data = new DataClass
+const ViewBook = new ViewBookClass
+
+
+
+
+var selectTypeRazdel = document.getElementById('typeRazdel');
+
+for (let i = 0; i < selectTypeRazdel.options.length; i++) {
+  if (selectTypeRazdel.options[i].value === Data.type) {
+      selectTypeRazdel.selectedIndex = i;
+      break;
+  }
+}
+
+
+selectTypeRazdel.addEventListener('change', function() {
+    var selectedValue = this.value;
+    if (selectedValue) {
+        SelectType(selectedValue);
+    }
+});
+
+var selectYear = document.getElementById('year');
+
+for (let i = 0; i < selectYear.options.length; i++) {
+  if (selectYear.options[i].value === Data.year) {
+      selectYear.selectedIndex = i;
+      break;
+  }
+}
+
+
+selectYear.addEventListener('change', function() {
+    var selectedValue = this.value;
+    if (selectedValue) {
+        SelectYear(selectedValue);
+    }
+});
+selectRateElem=document.getElementById('rate');
+selectRateElem.addEventListener('change', SelectRate);
+selectRateElem.checked = Data.rateBook;
+
+function SelectYear(value) {
+    setCookieMy('year',value);
+    location.reload();
+}
+
+function SelectRate() {
+    setCookieMy('rate',selectRateElem.checked);
+    location.reload();
+}
+function SelectType(value) {
+    setCookieMy('type',value);
+    setCookieMy('datas',Data.datas);
+    location.reload();
+}
+
+
+
+
+
+function openBook (id){
+setCookieMy('book_id', id); 
+location.href='index.html';
+}
+
+
 
 function setCookieMy(name,data) {
     setCookie(name, data, {
@@ -232,7 +235,7 @@ function setCookieMy(name,data) {
         tip: 2,
         r: 1
     },function(data) {
-        document.getElementById("bottonAddFavorite_"+n).classList.toggle("hide");
+        document.getElementById("bottonAddFavorite_"+idBook).classList.toggle("hide");
     })
 }
 
@@ -240,8 +243,8 @@ function setCookieMy(name,data) {
     const observer = new IntersectionObserver((entries) => {
     if ((window.scrollY > document.body.scrollHeight - 1500)&& window.scrollY > 5000 ) {
         let dd = document.getElementById('load-more-button')
-        step++;
-        BookList();
+        Data.step++;
+        ViewBook.BookList();
         observer.observe(dd);
     }
   }, {
