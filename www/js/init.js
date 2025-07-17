@@ -102,22 +102,6 @@ class VisualPanelClass {
 
 
 
-    KeyDown() {
-        if (event.code == "ArrowRight") {
-            Book.num = Book.num + 1
-            Panel.text_ru.textContent = Book.book_mass_rus[Book.num]
-            Panel.NumberLinesBook.value = Book.num
-            if (Book.book_mass_eng[Book.num] !== undefined && Book.book_mass_eng[Book.num].length > 0) { Panel.text_en.textContent = Book.book_mass_eng[Book.num]; }
-            numNext = Book.num + 1
-        }
-        if (event.code == "ArrowLeft") {
-            Book.num = Book.num - 1
-            Panel.text_ru.textContent = Book.book_mass_rus[Book.num]
-            Panel.NumberLinesBook.value = Book.num
-            if (Book.book_mass_eng[Book.num] !== undefined && Book.book_mass_eng[Book.num].length > 0) { Panel.text_en.textContent = Book.book_mass_eng[Book.num]; }
-            numNext = Book.num + 1
-        }
-    }
 
     Back() {
         Book.num = Book.num - 1
@@ -126,6 +110,8 @@ class VisualPanelClass {
         if (Book.book_mass_eng[Book.num] !== undefined && Book.book_mass_eng[Book.num].length > 0) { Panel.text_en.textContent = Book.book_mass_eng[Book.num]; }
         else { Panel.text_en.textContent = '' }
         numNext = Book.num + 1
+        
+        if(Book.num % 5 == 0) Statistic.keeptime(isUpdate)
         updateReadList()
     }
     Forward() {
@@ -135,6 +121,7 @@ class VisualPanelClass {
         if (Book.book_mass_eng[Book.num] !== undefined && Book.book_mass_eng[Book.num].length > 0) { Panel.text_en.textContent = Book.book_mass_eng[Book.num]; }
         else { Panel.text_en.textContent = '' }
         numNext = Book.num + 1
+        if(Book.num % 5 == 0) Statistic.keeptime(isUpdate)
         updateReadList()
     }
 
@@ -581,8 +568,8 @@ class SpeakClass {
            
         }
 
-            keeptime(0);
-            noSleep.enable();noSleepx = 1
+            Statistic.keeptime(isStart);
+            noSleep.enable();noSleepx = isStart
             CookiesUp.setCookieMy(Book.name_file, Book.num)  // строчный куки
             Panel.NumberLinesBook.value = Book.num
         }
@@ -599,10 +586,10 @@ class SpeakClass {
             }).then(function () {
                 if (Panel.ReadEng.checked == false) {
                     Speeker.ReadList = Speeker.ReadList.slice(1);
-                    lastElement = Speeker.ReadList.slice(-1)
-                    var tmp = lastElement[0].id + 1;
+                    var tmp =  Speeker.ReadList.slice(-1)[0].id + 1;
                     Speeker.ReadList.push({ id: tmp, text: TrimText(Book.book_mass_rus[tmp]), textEng: '', status: 0, statusEng: 0 });
-                    Book.num++; Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
+                    Book.num++; 
+                    Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
                     Speeker.Speak();
                 } else
                     Book.ScanTransReadList();
@@ -627,15 +614,15 @@ class SpeakClass {
             }).then(function () {
                 Book.num++;
                 Speeker.ReadList = Speeker.ReadList.slice(1);
-                var lastElement = Speeker.ReadList.slice(-1)
-                var tmp = lastElement[0].id + 1;
+                var tmp = Speeker.ReadList.slice(-1)[0].id + 1
+               
                 Speeker.ReadList.push({ id: tmp, text: TrimText(Book.book_mass_rus[tmp]), textEng: '', status: 0, statusEng: 0 });
 
-                if (Panel.ReadRu.checked == true) Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
-                Panel.text_en.textContent = Book.book_mass_eng[Book.num];
-                Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
-                Book.ScanTransReadList();
-                Speeker.Speak()
+                if (Panel.ReadRu.checked == true) 
+                    Panel.text_en.textContent = Book.book_mass_eng[Book.num];
+                    Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
+                    Book.ScanTransReadList();
+                    Speeker.Speak()
 
             }, function (reason) {
                 alert('Ошибка синтеза речи: ' + reason);
@@ -651,7 +638,7 @@ class SpeakClass {
         noSleepx = 0
         numNext=Book.num+1
 
-    keeptime(1);
+    Statistic.keeptime(isStop);
 }
 
  SpeakStart () {
@@ -662,7 +649,7 @@ class SpeakClass {
         this.Speak();
     
         }
-    keeptime(1);
+    Statistic.keeptime(isStart);
 }
 
 
@@ -687,6 +674,60 @@ class SpeakClass {
 }
 
 
+class StatisticClass {
+    constructor() {
+
+    }
+    
+  keeptime(inputVar=0) {
+
+        if(inputVar==isUpdate) {
+            $.post("https://allfilmbook.ru/API/book/keeptime/", {
+                id: Book.book_id, addTime: 0, UserName: UserName, UserHash: UserHash, last: Book.num })
+                .done(function(data) { 
+                // data; 
+            })
+            return;
+        }
+        
+        var currentTime = new Date().getTime(); // текущее время в миллисекундах
+        var diff = (currentTime - lastTime) / 1000; // разница в секундах
+    
+        if (lastTime !== null) {
+            if (diff > 30 && diff < 80) { // проверяем условие
+                var addTime = Math.floor(diff); // округляем до целого числа
+                if (addTime==0) addTime=1;
+                $.post("https://allfilmbook.ru/API/book/keeptime/", {
+                     id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num })
+                     .done(function(data) { 
+                        // data; 
+                    })
+    
+                lastTime=currentTime;
+            }
+            else 
+                if(diff > 80) lastTime=currentTime;
+    
+        
+            }
+        else 
+            lastTime=currentTime;
+        if(inputVar==isStop)  lastTime= null;
+    
+    }
+
+   ocenka() {
+
+        $.get("https://allfilmbook.ru/API/RatingBook/", {
+            book: Book.book_id,
+            tip: "1",
+            r: Panel.ocenka_n.value
+        })
+    }
+
+
+
+}
  var voicesList=[];
 
 
@@ -702,7 +743,9 @@ class SpeakClass {
 var UserId = getCookie("UserId");
 var UserHash = getCookie("UserHash");
 var UserName = getCookie("UserName");
-
+var isStart=1;
+var isStop=0;
+var isUpdate=0;
 if (!UserHash || !UserName) { // Если не авторизован
     document.getElementById('Avtorization_link').innerHTML += '<li><a href="#" onclick=\'Avtorization_ShowHide()\'>Войти</a></li>';
 }
@@ -733,6 +776,7 @@ const queryOpts = {
     name: "clipboard-read",
     allowWithoutGesture: false
 }
+
 const permissionStatus = navigator.permissions.query(queryOpts)
 var lastTime = null; // переменная для хранения времени последнего запуска функции
 $("body").prepend("<div id='PleaseWait' name='PleaseWait' style='display: none;position: absolute;top: 50%;right: 50%;'><img src='img/load.gif' width='50' height='50'/></div>");
@@ -744,14 +788,7 @@ $("body").prepend("<div id='PleaseWait' name='PleaseWait' style='display: none;p
 
 
 
-function ocenka() {
-    // Отправляем оценку книги в БД
-    $.get("https://allfilmbook.ru/API/RatingBook/", {
-        book: Book.book_id,
-        tip: "1",
-        r: Panel.ocenka_n.value
-    })
-}
+
 
 
 function updateRateCookes() { CookiesUp.setCookieMy("rate", Panel.rateRusRange.value) }
@@ -791,6 +828,7 @@ const Panel = new VisualPanelClass;
 const Book = new MainBookClass;
 const Speeker = new SpeakClass;
 const TranslateBook = new TranslateBookClass;
+const Statistic = new StatisticClass;
 setTimeout(function() {
 CookiesUp.start_cookie()
 if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатывает
@@ -805,3 +843,22 @@ if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатыва
 },200)
 
 setTimeout(function() {if (Panel.Translate.checked==true) {updateReadList();TranslateBook.TranslateNum(Book.num);}}, 1400)
+
+
+function updateReadList() {
+    i = 0;
+    Speeker.ReadList = [];
+    
+    while (i < Speeker.ReadListCout) {
+        var tmp;
+        var tmp1 = 0;
+        if (Book.book_mass_eng[Book.num + i] == undefined) tmp = '';
+        else {
+            tmp = Book.book_mass_eng[Book.num + i];
+            tmp1 = 3;
+        }
+        Speeker.ReadList.push({ id: Book.num + i, text: TrimText(Book.book_mass_rus[Book.num + i]), textEng: tmp, status: 0, statusEng: tmp1 })
+        i++;
+    }
+}
+
