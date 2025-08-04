@@ -229,3 +229,26 @@ span.short-quality1 {
 #menu li {
     margin: 5px 0;
   }
+
+  .modal {
+
+  position: fixed; /* Оставаться на месте */
+  z-index: 1; /* Сидеть на вершине */
+  left: 0; top: 0;
+  width: 100%; /* Полная ширина */
+  height: 100%; /* Полная высота */
+  overflow: auto; /* Включить прокрутку, если это необходимо */
+  background-color: rgb(0,0,0); /* Цвет запасной вариант */
+  background-color: rgba(0,0,0,0.4); /* Чёрный с непрозрачностью */
+}
+
+/* Модальное содержание/коробка */
+.modal-content {
+  background-color: #ffffff;
+  margin: 15% auto;/* 15% сверху и по центру */
+  padding: 20px;
+  border: 1px solid #000000;
+  width: 80%;/* Может быть больше или меньше, в зависимости от размера экрана */
+  color: #000000;
+}
+

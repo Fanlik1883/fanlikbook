@@ -2,14 +2,14 @@
 class VisualPanelClass {
     constructor() {
         setTimeout(this.StartPanelText, 500)
-        this.name = name
-        this.Translate = document.getElementById("trans")
-        this.ReadRu = document.getElementById("trans0")//Читать оригинал?
-        this.ReadEng = document.getElementById("trans1") // Читать преревод
+        this.Translate = document.getElementById("TranslateRusPanel")
+        this.ReadRu = document.getElementById("ReadRusPanel")//Читать оригинал?
+        this.ReadEng = document.getElementById("ReadEngPanel") // Читать преревод
         this.textPanelEN = document.getElementById("textPanelEN") //Английская панель
         this.textPanelRU = document.getElementById("textPanelRU") //Русская панель
-        this.Htrans0 = document.getElementById("Htrans0")
-        this.Htrans = document.getElementById("Htrans")
+        this.HideRusPanel = document.getElementById("HideRusPanel")
+        this.HideEngPanel = document.getElementById("HideEngPanel")
+        this.readYourself = document.getElementById("readYourself")
 
 
 
@@ -18,10 +18,10 @@ class VisualPanelClass {
         this.text_en = document.getElementById("text_en")
         this.voiceRusSelect = document.getElementById("voiceRusSelect")
         this.voiceEngSelect = document.getElementById("voiceEngSelect")
-        this.list_files = document.getElementById("list_files")
-        this.list_reader = document.getElementById('list_reader');
+
         this.lang_0 = document.getElementById("lang_0")
         this.lang_1 = document.getElementById("lang_1")
+        
 
         this.rateRusRange = document.getElementById("rateRusRange")
         this.rateRusOut = document.querySelector('output[for="rateRusOut"]')
@@ -33,7 +33,10 @@ class VisualPanelClass {
         this.NumberLinesBookSlider = document.getElementById("file_nommax")
         this.NumberLinesBook0 = document.getElementById("file_nom0") // Поле для строки ввода
         this.NumberLinesBook = document.getElementById("file_nom1") //Строка сейчас
-        this.how = 0
+        this.StatisticOutElement = document.getElementById("StatisticOut") 
+        this.FirstLang = document.getElementById("FirstLang") 
+
+
         this.rateRusRange.addEventListener('change', updateOutputs);
         this.rateEngRange.addEventListener("change", updateOutputs)
         setTimeout(function() {
@@ -49,13 +52,13 @@ class VisualPanelClass {
             numNext = Book.num + 1 }
         )
 
-        this.Htrans0.addEventListener("change", function (event) {
-            if (Panel.Htrans0.checked == true) { Panel.textPanelRU.style.display = 'none' }
-            else if (Panel.Htrans0.checked == false) Panel.textPanelRU.style.display = ''
+        this.HideRusPanel.addEventListener("change", function (event) {
+            if (Panel.HideRusPanel.checked == true) { Panel.textPanelRU.style.display = 'none' }
+            else if (Panel.HideRusPanel.checked == false) Panel.textPanelRU.style.display = ''
         })
-        this.Htrans.addEventListener("change", function (event) {
-            if (Panel.Htrans.checked == true) { Panel.textPanelEN.style.display = 'none' }
-            else if (Panel.Htrans.checked == false) Panel.textPanelEN.style.display = ''
+        this.HideEngPanel.addEventListener("change", function (event) {
+            if (Panel.HideEngPanel.checked == true) { Panel.textPanelEN.style.display = 'none' }
+            else if (Panel.HideEngPanel.checked == false) Panel.textPanelEN.style.display = ''
         })
 
         document.addEventListener("keydown", this.KeyDown)
@@ -79,26 +82,6 @@ class VisualPanelClass {
 
     updatelang() { TranslateBook.lang0 = Panel.lang_0.value; TranslateBook.lang1 = Panel.lang_1.value; }
 
-    SettingsPanelHide() {
-        if (Panel.how == 0) {
-            Panel.listReaderGet();
-            Panel.GetListFile();
-            document.getElementById("myDropdown").classList.toggle("show")
-            Panel.how = 1;
-        } else {
-            var dropdowns = document.getElementsByClassName("dropdown-content")
-            var i
-            for (i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i]
-                if (openDropdown.classList.contains("show")) {
-                    openDropdown.classList.remove("show")
-                }
-            }
-        }
-
-        Panel.how = 0
-    }
-
 
 
 
@@ -110,9 +93,8 @@ class VisualPanelClass {
         if (Book.book_mass_eng[Book.num] !== undefined && Book.book_mass_eng[Book.num].length > 0) { Panel.text_en.textContent = Book.book_mass_eng[Book.num]; }
         else { Panel.text_en.textContent = '' }
         numNext = Book.num + 1
-        
         if(Book.num % 5 == 0) Statistic.keeptime(isUpdate)
-        updateReadList()
+
     }
     Forward() {
         Book.num = Book.num + 1
@@ -121,7 +103,12 @@ class VisualPanelClass {
         if (Book.book_mass_eng[Book.num] !== undefined && Book.book_mass_eng[Book.num].length > 0) { Panel.text_en.textContent = Book.book_mass_eng[Book.num]; }
         else { Panel.text_en.textContent = '' }
         numNext = Book.num + 1
-        if(Book.num % 5 == 0) Statistic.keeptime(isUpdate)
+        if(this.readYourself.checked==true) {
+               Statistic.keeptime(isReadYourSelf);
+               Book.ScanTransReadList();
+        }
+        else
+               if(Book.num % 5 == 0) Statistic.keeptime(isUpdate)
         updateReadList()
     }
 
@@ -149,44 +136,13 @@ class VisualPanelClass {
         updateRate0Cookes();
     }
 
-        GetListFile() {
-            $.post('https://allfilmbook.ru/API/book/reader/', { id: 7, UserName: UserName, UserHash: UserHash },
-                function (data) {
-                    var json;
-                    json = JSON.parse(data);
-                    Panel.list_files.innerHTML = '';
-                    json.forEach(file => {
-                        const link = document.createElement('a');
-                        link.onclick = function () { Book.book_id = file.book_id; CookiesUp.setCookieMy('book_id', Book.book_id); location.reload(); }
-                        link.innerText = file.title.slice(0, 50) + ' (' + file.last + ')';
-                        Panel.list_files.appendChild(link);
-                    });
-                });
-        }
 
-
-        listReaderGet() {
-            $.post('https://allfilmbook.ru/API/book/keeptimestat/', { id: 7, UserName: UserName, UserHash: UserHash },
-                function (data) {
-                    data = JSON.parse(data);
-                    const link = document.createElement('div');
-                    var obuchSeconds = data.obuchSeconds
-                    var hudSeconds = data.hudSeconds
-                    var hudAll = data.hudAll
-                    var obuchAll = data.obuchAll
-                    var hudTime = data.hudTime
-                    var obuchTime = data.obuchTime
-                    link.innerText = 'Худож: ' + hudTime + ' | Обуч. ' + obuchTime;
-                    Panel.list_reader.innerHTML = '';
-                    Panel.list_reader.appendChild(link);
-                });
-        }
 
         StartPanelText = function () {
-            if (this.Htrans0.checked == true) { this.textPanelRU.style.display = 'none' }
-            else if (this.Htrans0.checked == false) this.textPanelRU.style.display = ''
-            if (this.Htrans.checked == true) { this.textPanelEN.style.display = 'none' }
-            else if (this.Htrans.checked == false) this.textPanelEN.style.display = ''
+            if (this.HideRusPanel.checked == true) { this.textPanelRU.style.display = 'none' }
+            else if (this.HideRusPanel.checked == false) this.textPanelRU.style.display = ''
+            if (this.HideEngPanel.checked == true) { this.textPanelEN.style.display = 'none' }
+            else if (this.HideEngPanel.checked == false) this.textPanelEN.style.display = ''
         }
 
         }
@@ -194,16 +150,18 @@ class VisualPanelClass {
 class CookiesClass {
     constructor() {
         this.updateCookieState()
-        this.checkboxes = ['trans', 'trans0', 'trans1', 'Htrans', 'Htrans0'];
+        this.checkboxes = ['TranslateRusPanel', 'ReadRusPanel', 'ReadEngPanel', 'HideEngPanel', 'HideRusPanel','FirstLang','readYourself'];
         this.restoreCheckboxState()
 
     }
     updateCookieState() {
-        document.getElementById('trans').onchange = function () { CookiesUp.setCookieMy('trans', document.getElementById('trans').checked.toString()); }
-        document.getElementById('trans0').onchange = function () { CookiesUp.setCookieMy('trans0', document.getElementById('trans0').checked.toString()); }
-        document.getElementById('trans1').onchange = function () { CookiesUp.setCookieMy('trans1', document.getElementById('trans1').checked.toString()); }
-        document.getElementById('Htrans').onchange = function () { CookiesUp.setCookieMy('Htrans', document.getElementById('Htrans').checked.toString()); }
-        document.getElementById('Htrans0').onchange = function () { CookiesUp.setCookieMy('Htrans0', document.getElementById('Htrans0').checked.toString()); }
+        document.getElementById('TranslateRusPanel').onchange = function () { CookiesUp.setCookieMy('TranslateRusPanel', document.getElementById('TranslateRusPanel').checked.toString()); }
+        document.getElementById('ReadRusPanel').onchange = function () { CookiesUp.setCookieMy('ReadRusPanel', document.getElementById('ReadRusPanel').checked.toString()); }
+        document.getElementById('ReadEngPanel').onchange = function () { CookiesUp.setCookieMy('ReadEngPanel', document.getElementById('ReadEngPanel').checked.toString()); }
+        document.getElementById('HideEngPanel').onchange = function () { CookiesUp.setCookieMy('HideEngPanel', document.getElementById('HideEngPanel').checked.toString()); }
+        document.getElementById('HideRusPanel').onchange = function () { CookiesUp.setCookieMy('HideRusPanel', document.getElementById('HideRusPanel').checked.toString()); }
+        document.getElementById('FirstLang').onchange = function () { CookiesUp.setCookieMy('FirstLang', document.getElementById('FirstLang').checked.toString()); }
+        document.getElementById('readYourself').onchange = function () { CookiesUp.setCookieMy('readYourself', document.getElementById('readYourself').checked.toString()); }
     }
 
     restoreCheckboxState() { // Функция для восстановления состояния чекбоксов
@@ -212,6 +170,8 @@ class CookiesClass {
             const checkedValue = getCookie(id) === 'true';
             if (checkbox && typeof checkedValue !== 'undefined') { checkbox.checked = checkedValue; }
         });
+
+    
     }
     start_cookie() {
         Panel.voiceEngSelect.selectedIndex = getCookie('voice0_num');
@@ -252,6 +212,16 @@ class MainBookClass {
         this.map = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', 'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'E', 'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch', 'Ь': '', 'Ы': 'Y', 'Ъ': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya', '[': '_', ']': '_', '-': '_', '.': '_', ' ': '_', '	': '_' };
 
 
+    }
+
+    changeBook(id){
+        CookiesUp.setCookieMy('book_id', id); 
+        location.reload();
+    }
+
+    reReadBook(){
+        localStorage.removeItem(this.book_id + "file_text");
+        get_book();
     }
 
     get_book() {
@@ -403,8 +373,8 @@ class MainBookClass {
 
     ScanTransReadList() {
         var i = 0;
-        Speeker.ReadList.forEach((data, index) => {
-            if (data.statusEng == 0 && data.textEng.length == 0) {
+        Speeker.ReadList.forEach((data) => {
+            if (data.statusEng == 0 && Book.book_mass_eng.length == 0) {
                 TranslateBook.TranslateNum(data.id);
                 return 0;
             }
@@ -519,14 +489,12 @@ class TranslateBookClass {
          this.lang1 = "en"
         }
   TranslateNum(num0) {
-   //*------Запрос на получение перевод
    if(Book.book_mass_eng[num0]==undefined) {
-   var textData = TrimText(Book.book_mass_rus[num0]);
    Speeker.ReadList.find(element => element.id === num0).statusEng=1; 
     $.get("https://allfilmbook.ru/API/translate/", {
         from: this.lang0,
         to: this.lang1,
-        text: textData,
+        text: TrimText(Book.book_mass_rus[num0]),
     }).success(function(data) {
         var json = JSON.parse(data);
         Book.book_mass_eng[num0]=json.response;
@@ -547,6 +515,10 @@ class SpeakClass {
         this.book_id
         this.ReadList = new Array();
         this.ReadListCout = 10;// Сколько строчек попадают в массив для чтения одного языка
+        this.ruVoiceFirst=0;
+        this.enVoiceFirst=1;
+        this.langFirstRead=this.ruVoiceFirst;
+
         setTimeout(this.ttsList, 3000);
     }
 
@@ -556,14 +528,25 @@ class SpeakClass {
             Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
             Panel.text_en.textContent = Book.book_mass_eng[Book.num];
             // Отследить остановку функции
-           var out=0;
+            var out=0;
             Speeker.ReadList.forEach((data,index) => {  
                 if (out==0) {
-                if(Panel.Translate.checked==true) { if(Speeker.ReadList[index].statusEng==0){TranslateBook.TranslateNum(data.id);}}
-                if(Panel.ReadRu.checked==true && Panel.ReadEng.checked==false){if(Speeker.ReadList[index].status==0) {Speeker.ReadList[index].status=10;this.speakTextRu(data.text,Speeker.ReadList[index].id);}else {out=out+1;}}
-                if(Panel.ReadRu.checked==false && Panel.ReadEng.checked==true){if(Speeker.ReadList[index].statusEng==3){Speeker.ReadList[index].statusEng=10;this.speakTextEn(data.textEng,Speeker.ReadList[index].id)}else {out=out+1;}}
-                if(Panel.ReadRu.checked==true && Panel.ReadEng.checked==true ){if(Speeker.ReadList[index].status==0 && Speeker.ReadList[index].statusEng==3) {Speeker.ReadList[index].status=10;this.speakTextRu(data.text,Speeker.ReadList[index].id);Speeker.ReadList[index].statusEng=10;this.speakTextEn(data.textEng,Speeker.ReadList[index].id);} else {out=out+1;}}
-                }       
+                    if(Panel.Translate.checked==true) { if(Speeker.ReadList[index].statusEng==0){TranslateBook.TranslateNum(data.id);}}
+                    if(Panel.ReadRu.checked==true && Panel.ReadEng.checked==false){if(Speeker.ReadList[index].status==0) {Speeker.ReadList[index].status=10;this.speakTextRu(Speeker.ReadList[index].id);}else {out=out+1;}}
+                    if(Panel.ReadRu.checked==false && Panel.ReadEng.checked==true){if(Speeker.ReadList[index].statusEng==3){Speeker.ReadList[index].statusEng=10;this.speakTextEn(Speeker.ReadList[index].id)}else {out=out+1;}}
+                    if(Panel.ReadRu.checked==true && Panel.ReadEng.checked==true ){
+                        if(Speeker.ReadList[index].status==0 && Speeker.ReadList[index].statusEng==3) {
+                           if(Panel.FirstLang.checked) {
+                                this.speakTextRu(Speeker.ReadList[index].id);
+                                this.speakTextEn(Speeker.ReadList[index].id);}
+                           else {
+                                this.speakTextEn(Speeker.ReadList[index].id);
+                                this.speakTextRu(Speeker.ReadList[index].id)}
+                           Speeker.ReadList[index].statusEng=10;
+                           Speeker.ReadList[index].status=10;
+
+                        } else {out=out+1;}}
+                    }       
             });
            
         }
@@ -577,22 +560,20 @@ class SpeakClass {
 
 
 
-    speakTextRu(text, index) {
+    speakTextRu(index) {
             TTS.speak({
-                text: text,
+                text: TrimText(Book.book_mass_rus[index]),
                 locale: Panel.voiceRusSelect[Panel.voiceRusSelect.selectedIndex].label,
                 rate: Panel.rateRusRange.value,
                 cancel: false
             }).then(function () {
                 if (Panel.ReadEng.checked == false) {
-                    Speeker.ReadList = Speeker.ReadList.slice(1);
-                    var tmp =  Speeker.ReadList.slice(-1)[0].id + 1;
-                    Speeker.ReadList.push({ id: tmp, text: TrimText(Book.book_mass_rus[tmp]), textEng: '', status: 0, statusEng: 0 });
-                    Book.num++; 
-                    Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
-                    Speeker.Speak();
-                } else
-                    Book.ScanTransReadList();
+                    Speeker.NextReadList();
+                    
+                } else {
+                     Book.ScanTransReadList();
+                     if(!Panel.FirstLang.checked)  Speeker.NextReadList();   
+                    }
 
 
             }, function (reason) {
@@ -604,33 +585,33 @@ class SpeakClass {
 
 
 
-    speakTextEn(text) {
+    speakTextEn(index) {
 
             TTS.speak({
-                text: text,
+                text: TrimText(Book.book_mass_eng[index]),
                 locale: Panel.voiceEngSelect[Panel.voiceEngSelect.selectedIndex].label,
                 rate: Panel.rateEngRange.value,
                 cancel: false
             }).then(function () {
-                Book.num++;
-                Speeker.ReadList = Speeker.ReadList.slice(1);
-                var tmp = Speeker.ReadList.slice(-1)[0].id + 1
-               
-                Speeker.ReadList.push({ id: tmp, text: TrimText(Book.book_mass_rus[tmp]), textEng: '', status: 0, statusEng: 0 });
+                if (Panel.ReadRu.checked == true) Book.ScanTransReadList();
+                if (Panel.FirstLang.checked) Speeker.NextReadList();   
 
-                if (Panel.ReadRu.checked == true) 
-                    Panel.text_en.textContent = Book.book_mass_eng[Book.num];
-                    Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
-                    Book.ScanTransReadList();
-                    Speeker.Speak()
-
+                
             }, function (reason) {
                 alert('Ошибка синтеза речи: ' + reason);
             })
 
     }
 
-
+ NextReadList(){
+                Book.num++;
+                Speeker.ReadList = Speeker.ReadList.slice(1);
+                var tmp = Speeker.ReadList.slice(-1)[0].id + 1
+                Speeker.ReadList.push({ id: tmp, status: 0, statusEng: 0 });
+                Panel.text_en.textContent = Book.book_mass_eng[Book.num];
+                Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
+                Speeker.Speak()
+ }
  speak_pause () {
         TTS.stop();
         setTimeout(TTS.stop(), 100);
@@ -642,20 +623,23 @@ class SpeakClass {
 }
 
  SpeakStart () {
-
+ if(Panel.readYourself.checked==true) Panel.Forward();
+ else {
         if(Panel.text_en.textContent.length==0 && Panel.Translate.checked==true){TranslateBook.TranslateNum(Book.num);}
         else {
-        updateReadList();
-        this.Speak();
-    
+            updateReadList();
+            this.Speak();
+        
         }
-    Statistic.keeptime(isStart);
+        Statistic.keeptime(isStart);
+}
 }
 
 
  ttsList() {
     
-    TTS.getVoices().then(voicesList => {
+    TTS.getVoices()
+      .then(voicesList => {
         const ruVoices = voicesList.filter(voicesList => voicesList.language === "ru_RU");
         const enVoices = voicesList.filter(voicesList => voicesList.language === "en_US");
         ruVoices.forEach((voicesList,index)=>{
@@ -667,16 +651,20 @@ class SpeakClass {
             Panel.voiceEngSelect.options[index] = new Option(voicesList.identifier,index)
         }
         )
-      });
+      })  
+      .catch(error => {
+        
+        if(Vars.ErrorLoadTts<2) {setTimeout(Speeker.ttsList,2000);Vars.ErrorLoadTts++;}
+});
       
 }
 
 }
-
+var voices;
 
 class StatisticClass {
     constructor() {
-
+                    this.GetStatistic();
     }
     
   keeptime(inputVar=0) {
@@ -690,25 +678,20 @@ class StatisticClass {
             return;
         }
         
+        
         var currentTime = new Date().getTime(); // текущее время в миллисекундах
         var diff = (currentTime - lastTime) / 1000; // разница в секундах
     
         if (lastTime !== null) {
-            if (diff > 30 && diff < 80) { // проверяем условие
-                var addTime = Math.floor(diff); // округляем до целого числа
+            if ((diff > 30 && diff < 80&&inputVar!=isReadYourSelf)||(diff > 3 && diff < 120 && inputVar==isReadYourSelf) ) { 
+                var addTime = Math.floor(diff); 
                 if (addTime==0) addTime=1;
-                $.post("https://allfilmbook.ru/API/book/keeptime/", {
-                     id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num })
-                     .done(function(data) { 
-                        // data; 
-                    })
-    
+                $.post("https://allfilmbook.ru/API/book/keeptime/", {id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num }).done(function(data) { })
                 lastTime=currentTime;
             }
             else 
-                if(diff > 80) lastTime=currentTime;
-    
-        
+              if((diff > 80 &&inputVar!=isReadYourSelf)||diff > 120 && inputVar==isReadYourSelf) lastTime=currentTime;
+           
             }
         else 
             lastTime=currentTime;
@@ -725,17 +708,40 @@ class StatisticClass {
         })
     }
 
+      GetStatistic() {
+
+
+            $.post("https://allfilmbook.ru/API/book/statistic/", {
+                UserName: UserName, UserHash: UserHash })
+                .done(function(data) { 
+                    var json;
+                    json = JSON.parse(data)['results'];
+                    var out='';
+                    out ="<br><table class='tableStatistic'   width='"+screenWidth+"px'> <tr><th width='10%'>Дата</th><th width='30%'>Книга</th><th width='5%'>Время</th><th width='3%'>Вид</th><th width='5%'>Last</th></tr>";
+                    json.forEach(function (item, i, json) {
+                        if(item['last']) out+="<tr ><td>"+item['date']+"</td><td><a href='#' onclick='Book.changeBook("+item['id']+")' >"+item['name']+"</a></td><td>"+item['time']+"</td><td>"+item['type']+"</td><td>"+item['last']+"</td></tr>";
+                        else out+= "<tr class='tableStatItogi'><td>Худож.</td><td>"+item['HudMin']+" мин.</td><td>Обучающие</td><td>"+item['ObuchMin']+" мин.</td><td></td></tr>";
+                    })
+                    Panel.StatisticOutElement.innerHTML=out+"</table></div>"
+            })
+            return;
+        
+    }
 
 
 }
  var voicesList=[];
 
+ const screenWidth = window.screen.width;
 
 
 
 
-
-
+ class VarClass {
+    constructor() {
+                    this.ErrorLoadTts=0;
+    }
+}
 
 
 
@@ -745,7 +751,8 @@ var UserHash = getCookie("UserHash");
 var UserName = getCookie("UserName");
 var isStart=1;
 var isStop=0;
-var isUpdate=0;
+var isUpdate=2;
+var isReadYourSelf=3;
 if (!UserHash || !UserName) { // Если не авторизован
     document.getElementById('Avtorization_link').innerHTML += '<li><a href="#" onclick=\'Avtorization_ShowHide()\'>Войти</a></li>';
 }
@@ -809,7 +816,7 @@ function updateOutputs() {
 
 
 
-let TrimText = function (text) {
+let TrimText = function (text) { /* Переместить в book*/
     if(text!=undefined && text!=""){
         text = text.trim()
         text = text.replace(/[*{}(»›‹«)\r]+/g, "");
@@ -829,6 +836,7 @@ const Book = new MainBookClass;
 const Speeker = new SpeakClass;
 const TranslateBook = new TranslateBookClass;
 const Statistic = new StatisticClass;
+const Vars = new VarClass;
 setTimeout(function() {
 CookiesUp.start_cookie()
 if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатывает

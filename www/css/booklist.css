@@ -63,3 +63,14 @@ font-size: 20px;
   width: 40px; 
   height: 40px;
 }
+
+.tableStatistic{
+  border: 1px;
+  font-size: small;
+}
+
+.tableStatItogi{
+  border: 2px;
+  background-color: rgba(204, 203, 203, 0.904);
+
+}
