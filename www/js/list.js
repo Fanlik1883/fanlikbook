@@ -33,14 +33,25 @@ class ViewBookClass {
 
 
 
-                        ViewPort.append(liLast); // вставить liLast в конец <ol>			
-                    })
+                        ViewPort.append(liLast); // вставить liLast в конец <ol>	
+	
+                    }
+                
+                )
+                    if(Data.SaveiD>0 && Data.type<5) {
+                        if (document.querySelector('#Book_'+Data.SaveiD) !== null) {
+                            document.querySelector('#Book_'+Data.SaveiD).scrollIntoView({ behavior: 'smooth' });
+                            Data.SaveiD=0;
+                        }
+                    }	
                 }
                 })
-            
+
+
             }
 
  GetDesc(n){
+    
     $.get('https://allfilmbook.ru/API/book/description/', { n: n}).done(function (data) {
 		var json = JSON.parse(data);
         if (json.length === 0) {
@@ -66,11 +77,12 @@ class ViewBookClass {
            })
 
            var seqId,seqDesc;
-           var seqMap=item['seq'];
+           var seqMap=item.seq;
            seqMap.forEach(function (items, i, seqMap) {
-            seqId=items['seqId'];
-            seqDesc=items['seqDesc'];
-            req_out.innerHTML+="<a href='list.html?SeqId="+seqId+"' >"+seqDesc+"</a>"
+           var seqId=items.seqId;
+           var seqDesc=items.seqDesc;
+           var seqRating=items.seqRating;
+            req_out.innerHTML+="<a href='list.html?SeqId="+seqId+"' >"+seqDesc+"("+seqRating+")</a>"
            })
 
 
@@ -92,16 +104,17 @@ class ViewBookClass {
 }
 
  showDesc (id){
-  
+   if(Data.type<5) {setCookieMy('SaveiD',id,uselocalPath);setCookieMy('SaveStep',Data.step ,uselocalPath);}
+
     if(document.getElementById("desc_"+id).innerHTML==''){
         this.GetDesc(id);
 
-		setCookieMy('SaveiDF',id);
+		
 
     }else {
 
         if(document.getElementById("desc_"+id).classList[1]=="hide"){
-            setCookieMy('SaveiDF',id);
+           
 
 
             document.getElementById("desc_"+id).classList.remove("hide")
@@ -124,10 +137,11 @@ var UserHash = getCookie("UserHash");
 
 class DataClass {
     constructor() {
-this.step = getCookie("step");if (this.step === undefined) {this.step = 0; }
-this.type = getCookie("type");if (this.type === undefined) {this.type = 0; }
-this.rateBook = getCookie("rate");if (this.rateBook === undefined) {this.rateBook = false; }
-this.year = getCookie("year");if (this.year === undefined) {this.year = 0; }
+this.step = getCookie("SaveStep");if (this.step === 'undefined' ) {this.step = 0; }
+this.type = getCookie("type");if (this.type === 'undefined') {this.type = 0; }
+this.rateBook = getCookie("rate");if (this.rateBook === 'undefined') {this.rateBook = false; }
+this.year = getCookie("year");if (this.year === 'undefined') {this.year = 0; }
+if (getCookie("SaveiD") === "undefined") this.SaveiD=0; else this.SaveiD = getCookie("SaveiD");
 if (getCookie("datas") === "undefined") this.datas=0; else this.datas = getCookie("datas");
 this.rateBook = (this.rateBook === "true");
     }
@@ -136,7 +150,7 @@ this.rateBook = (this.rateBook === "true");
 const Data = new DataClass
 const ViewBook = new ViewBookClass
 
-
+    
 
 
 var selectTypeRazdel = document.getElementById('typeRazdel');
@@ -178,16 +192,19 @@ selectRateElem.checked = Data.rateBook;
 
 function SelectYear(value) {
     setCookieMy('year',value);
+    setCookieMy('SaveiD',0);
     location.reload();
 }
 
 function SelectRate() {
     setCookieMy('rate',selectRateElem.checked);
+    setCookieMy('SaveiD',0);
     location.reload();
 }
 function SelectType(value) {
     setCookieMy('type',value);
     setCookieMy('datas',Data.datas);
+    setCookieMy('SaveiD',0);
     location.reload();
 }
 
@@ -202,12 +219,11 @@ location.href='index.html';
 
 
 
-function setCookieMy(name,data) {
-    setCookie(name, data, {
-        expires: new Date(Date.now() + 86400 * 1000 * 30 * 12),
-        path: '/'
-    })
-
+function setCookieMy(name,data,local=0) {
+    if(local==0) 
+        setCookie(name, data, { expires: new Date(Date.now() + 86400 * 1000 * 30 * 12), path: '/'});
+    else
+        setCookie(name, data, { expires: new Date(Date.now() + 86400 * 1000 * 30 * 12)});
     }
 
 
@@ -243,7 +259,8 @@ function setCookieMy(name,data) {
     const observer = new IntersectionObserver((entries) => {
     if ((window.scrollY > document.body.scrollHeight - 1500)&& window.scrollY > 5000 ) {
         let dd = document.getElementById('load-more-button')
-        Data.step++;
+        Data.step++;            
+        setCookieMy('SaveStep',Data.step ,uselocalPath);
         ViewBook.BookList();
         observer.observe(dd);
     }
@@ -257,3 +274,5 @@ function setCookieMy(name,data) {
   setTimeout(observer.observe(dd), 10000);
 
 
+var turnOn=1;uselocalPath=1;
+var turnOff=0;
