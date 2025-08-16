@@ -193,20 +193,20 @@ selectRateElem.checked = Data.rateBook;
 function SelectYear(value) {
     setCookieMy('year',value);
     setCookieMy('SaveiD',0);
-    setCookieMy('step',0);
+    setCookieMy('SaveStep',0);
     location.reload();
 }
 
 function SelectRate() {
     setCookieMy('rate',selectRateElem.checked);
     setCookieMy('SaveiD',0);
-    setCookieMy('step',0);
+    setCookieMy('SaveStep',0);
     location.reload();
 }
 function SelectType(value) {
     setCookieMy('type',value);
     setCookieMy('datas',Data.datas);
-    setCookieMy('step',0);
+    setCookieMy('SaveStep',0);
 
     setCookieMy('SaveiD',0);
     location.reload();
