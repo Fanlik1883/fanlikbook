@@ -227,7 +227,7 @@ class MainBookClass {
     get_book() {
         if (this.book_id == 0) return;
         $.ajaxSetup({
-            timeout: 60000
+            timeout: 120000
         })
         $("#PleaseWait").show()
         var bookZip;
