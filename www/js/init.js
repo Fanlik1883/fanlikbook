@@ -196,7 +196,21 @@ class CookiesClass {
             path: '/'
         })
 
+
     }
+
+    setCookieServer(name, data) {
+     //   setCookie(name, data, { expires: new Date(Date.now() + 86400 * 1000 * 30 * 12), path: '/'  })
+        var cookie='foo=bar; Path=/; Expires=Tue, 21 Oct 2026 00:00:00 GMT';
+cordova.plugin.http.setCookie('allfilmbook.ru', cookie, options);
+//'foo=bar; Domain=example.com; Path=/; Expires=Tue, 21 Oct 2025 00:00:00 GMT'
+//cordova.plugin.http.setCookie('allfilmbook.ru', 'cookies=111;')
+
+
+    }
+
+
+
 
 }
 

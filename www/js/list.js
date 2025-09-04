@@ -12,8 +12,8 @@ class ViewBookClass {
                 if(params.get('SeqId')){Data.datas=params.get('SeqId');Data.type=8;}
 
                 $.ajaxSetup({timeout: 10000});
-                var finds = '';
-                $.post('https://allfilmbook.ru/API/book/list/', { UserName: UserName, UserHash: UserHash, type: Data.type, rate: rateR , year: Data.year, step: Data.step, data: Data.datas}).success(function (data) {
+                var finds = '';// 
+                $.post('https://api.allfilmbook.ru/book/list/', {UserName: UserName, UserHash: UserHash,  type: Data.type, rate: rateR , year: Data.year, step: Data.step, data: Data.datas}).success(function (data) {
             
                    var json = JSON.parse(data);
                     if (json.length === 0) {
@@ -52,7 +52,7 @@ class ViewBookClass {
 
  GetDesc(n){
     
-    $.get('https://allfilmbook.ru/API/book/description/', { n: n}).done(function (data) {
+    $.get('https://api.allfilmbook.ru/book/description/', { n: n}).done(function (data) {
 		var json = JSON.parse(data);
         if (json.length === 0) {
                       //  req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
@@ -63,7 +63,7 @@ class ViewBookClass {
             req_out.innerHTML='<img  src=\'img/read.png\' onclick="openBook('+n+')" class=\'bottons\'>';
             if(Data.type==3 )  req_out.innerHTML+='<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>';
             if(Data.type==4)  req_out.innerHTML+='<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>';
-            if(Data.type==1 || Data.type==5){
+            if(Data.type==1 || Data.type==5||Data.type==7||Data.type==8){
                 req_out.innerHTML+='<img  src=\'img/add-icon-png-2468.png\' id="bottonAddFavorite_'+n+'" onclick="addFavoriteBook('+n+')" class=\'bottons\'><img  src=\'img/add-icon-png-2468.png\' onclick="addWaitBook('+n+')" class=\'bottons\'>';
             }
            req_out.innerHTML+="<br>";
@@ -234,7 +234,7 @@ function setCookieMy(name,data,local=0) {
 
    
   function minusFavorites(idBook) {
-    $.post('https://allfilmbook.ru/API/book/rating/', {
+    $.post('https://api.allfilmbook.ru/book/rating/', {
         UserName: UserName, UserHash: UserHash,
         book: idBook,
         tip: 2,
@@ -249,7 +249,7 @@ function setCookieMy(name,data,local=0) {
 
 
  function addFavoriteBook(idBook) {
-    $.post("https://allfilmbook.ru/API/book/rating/", {
+    $.post("https://api.allfilmbook.ru/book/rating/", {
         UserName: UserName, UserHash: UserHash,
         book: idBook,
         tip: 2,
