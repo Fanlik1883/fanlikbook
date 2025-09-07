@@ -505,7 +505,7 @@ class TranslateBookClass {
   TranslateNum(num0) {
    if(Book.book_mass_eng[num0]==undefined) {
    Speeker.ReadList.find(element => element.id === num0).statusEng=1; 
-    $.get("https://allfilmbook.ru/API/translate/", {
+    $.get("https://api.allfilmbook.ru/translate/", {
         from: this.lang0,
         to: this.lang1,
         text: TrimText(Book.book_mass_rus[num0]),
@@ -684,7 +684,7 @@ class StatisticClass {
   keeptime(inputVar=0) {
 
         if(inputVar==isUpdate) {
-            $.post("https://allfilmbook.ru/API/book/keeptime/", {
+            $.post("https://api.allfilmbook.ru/book/keeptime/", {
                 id: Book.book_id, addTime: 0, UserName: UserName, UserHash: UserHash, last: Book.num })
                 .done(function(data) { 
                 // data; 
@@ -700,7 +700,7 @@ class StatisticClass {
             if ((diff > 30 && diff < 80&&inputVar!=isReadYourSelf)||(diff > 3 && diff < 120 && inputVar==isReadYourSelf) ) { 
                 var addTime = Math.floor(diff); 
                 if (addTime==0) addTime=1;
-                $.post("https://allfilmbook.ru/API/book/keeptime/", {id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num }).done(function(data) { })
+                $.post("https://api.allfilmbook.ru/book/keeptime/", {id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num }).done(function(data) { })
                 lastTime=currentTime;
             }
             else 
@@ -715,7 +715,7 @@ class StatisticClass {
 
    ocenka() {
 
-        $.get("https://allfilmbook.ru/API/RatingBook/", {
+        $.get("https://api.allfilmbook.ru/RatingBook/", {
             book: Book.book_id,
             tip: "1",
             r: Panel.ocenka_n.value
@@ -725,7 +725,7 @@ class StatisticClass {
       GetStatistic() {
 
 
-            $.post("https://allfilmbook.ru/API/book/statistic/", {
+            $.post("https://api.allfilmbook.ru/book/statistic/", {
                 UserName: UserName, UserHash: UserHash })
                 .done(function(data) { 
                     var json;

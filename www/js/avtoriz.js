@@ -53,6 +53,8 @@ function AvtorizationPost() { // Отправить запрос
             CookiesUp.setCookieMy("UserId",1)
             CookiesUp.setCookieMy("UserHash",dates.hash)
             CookiesUp.setCookieMy("UserName",login)
+
+            cordova.plugin.http.setCookie(url, "UserName", options);
             location.reload();
         
         }
