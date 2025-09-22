@@ -42,7 +42,7 @@ class VisualPanelClass {
         setTimeout(function() {
             this.voiceRusSelect.addEventListener("change", CookiesUp.updateVoice)
             this.voiceEngSelect.addEventListener("change", CookiesUp.updateVoice)
-        },500)
+        },5000)
         this.NumberLinesBook0.addEventListener("change", function (event) {
             Book.num = Number(Panel.NumberLinesBook0.value)
             Panel.NumberLinesBook.value = Panel.NumberLinesBook0.value
@@ -184,8 +184,8 @@ class CookiesClass {
 
  updateVoice() {
     // Если изменение голоса
-    this.setCookieMy("voice0_num", Panel.voiceEngSelect.value)
-    this.setCookieMy("voice_num", Panel.voiceRusSelect.value)
+    CookiesUp.setCookieMy("voice0_num", Panel.voiceEngSelect.value)
+    CookiesUp.setCookieMy("voice_num", Panel.voiceRusSelect.value)
 }
 
 
@@ -288,7 +288,7 @@ class MainBookClass {
             $("#PleaseWait").hide()
         } else {
 
-            $.get("https://allfilmbook.ru/book/files.php", {
+            $.get("https://api.allfilmbook.ru/book/file/", {
                 id: this.book_id,
                 unzip: 1,
                 type: 'fb2'
@@ -661,10 +661,12 @@ class SpeakClass {
         }
         )
 
+        Panel.voiceRusSelect.selectedIndex = getCookie('voice_num');
         enVoices.forEach((voicesList,index)=>{
             Panel.voiceEngSelect.options[index] = new Option(voicesList.identifier,index)
         }
         )
+        Panel.voiceEngSelect.selectedIndex = getCookie('voice0_num');
       })  
       .catch(error => {
         
