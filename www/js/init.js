@@ -735,7 +735,7 @@ class StatisticClass {
                     var out='';
                     out ="<br><table class='tableStatistic'   width='"+screenWidth+"px'> <tr><th width='10%'>Дата</th><th width='30%'>Книга</th><th width='5%'>Время</th><th width='3%'>Вид</th><th width='5%'>Last</th></tr>";
                     json.forEach(function (item, i, json) {
-                        if(item['last']) out+="<tr ><td>"+item['date']+"</td><td><a href='/list.html?AvtorId="+item['authorId']+"'  >"+item['name']+"</a></td><td>"+item['time']+"</td><td>"+item['type']+"</td><td>"+item['last']+"</td></tr>";
+                        if(item['last']) out+="<tr ><td>"+item['date']+"</td><td><a href='/list.html?AvtorId="+item['authorId']+"&IdBook="+item['id']+"'>"+item['name']+"</a></td><td>"+item['time']+"</td><td>"+item['type']+"</td><td>"+item['last']+"</td></tr>";
                         else out+= "<tr class='tableStatItogi'><td>Худож.</td><td>"+item['HudMin']+" мин.</td><td>Обучающие</td><td>"+item['ObuchMin']+" мин.</td><td></td></tr>";
                     })
                     Panel.StatisticOutElement.innerHTML=out+"</table></div>"

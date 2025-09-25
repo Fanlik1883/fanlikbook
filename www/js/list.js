@@ -38,7 +38,7 @@ class ViewBookClass {
                     }
                 
                 )
-                    if(Data.SaveiD>0 && Data.type<5) {
+                    if((Data.SaveiD>0 && Data.type<5)||(Data.SaveiD>0 && Data.type==7)) {
                         if (document.querySelector('#Book_'+Data.SaveiD) !== null) {
                             document.querySelector('#Book_'+Data.SaveiD).scrollIntoView({ behavior: 'smooth' });
                             Data.SaveiD=0;
@@ -137,13 +137,19 @@ var UserHash = getCookie("UserHash");
 
 class DataClass {
     constructor() {
-this.step = getCookie("SaveStep");if (this.step === 'undefined' ) {this.step = 0; }
-this.type = getCookie("type");if (this.type === 'undefined') {this.type = 0; }
-this.rateBook = getCookie("rate");if (this.rateBook === 'undefined') {this.rateBook = false; }
-this.year = getCookie("year");if (this.year === 'undefined') {this.year = 0; }
-if (getCookie("SaveiD") === "undefined") this.SaveiD=0; else this.SaveiD = getCookie("SaveiD");
-if (getCookie("datas") === "undefined") this.datas=0; else this.datas = getCookie("datas");
-this.rateBook = (this.rateBook === "true");
+        this.step = getCookie("SaveStep");if (this.step === 'undefined' ) {this.step = 0; }
+        this.type = getCookie("type");if (this.type === 'undefined') {this.type = 0; }
+        this.rateBook = getCookie("rate");if (this.rateBook === 'undefined') {this.rateBook = false; }
+        this.year = getCookie("year");if (this.year === 'undefined') {this.year = 0; }
+        if (getCookie("SaveiD") === "undefined") this.SaveiD=0; else this.SaveiD = getCookie("SaveiD");
+        if (getCookie("datas") === "undefined") this.datas=0; else this.datas = getCookie("datas");
+        this.rateBook = (this.rateBook === "true");
+        this.getIdBook();
+    }
+    getIdBook(){
+        let params = new URLSearchParams(document.location.search);
+        var IdBook = Number(params.get('IdBook'));
+        if(IdBook>0) this.SaveiD=IdBook;
     }
 
 }
