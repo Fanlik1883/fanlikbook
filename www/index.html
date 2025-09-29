@@ -6,6 +6,8 @@
         <script src="js/cookie.min.js" ></script>
         <script src="js/NoSleep.js"></script>
         <script src="js/lz-string.min.js"></script>
+        <script src="js/sax.js"></script>
+        <script src="js/xml2array.js"></script>
         <script src="js/avtoriz.js"></script>
         <script type="text/javascript" charset="utf-8" src="cordova.js"></script> 
         <meta api="https://rapidapi.com/developer">
@@ -68,83 +70,95 @@
     <br>
 <div class="tab">
   <input checked id="tab-btn-1" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-1">Настройки</label>
+  <label for="tab-btn-1">О книге</label>
   <input id="tab-btn-2" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-2">Статистика</label>
+  <label for="tab-btn-2">Настройки</label>
   <input id="tab-btn-3" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-3">Тесты</label>
+  <label for="tab-btn-3">Статистика</label>
+  <input id="tab-btn-4" name="tab-btn" type="radio" value="">
+  <label for="tab-btn-4">Тесты</label>
   <div class="tab-content" id="content-1">
-                            <hr>
-                           
 
-                         <input type='file' accept=".txt,.fb2" onchange='Book.openFile(event)'><br>
-                        <input type="checkbox" id="TranslateRusPanel" > <label>Перевод</label><br>
-                        <input type="checkbox" id="ReadEngPanel" name="ReadEngPanel"> <label>Читать Перевод</label><br>
-                        <input type="checkbox" id="ReadRusPanel" name="ReadRusPanel" checked> <label>Читать оригинал</label><br>
-                        <input type="checkbox" id="HideEngPanel" checked name="HideEngPanel" > <label>Спрятать
-                            Перевод</label><br>
-                        <input type="checkbox" id="HideRusPanel" name="HideRusPanel"> <label>Спрятать
-                            оригинал</label><br>
-                        <input type="checkbox" id="readYourself" > <label>Читаю Сам</label>
-                        <hr>
-                        <select size="1" id="lang_0" name="lang_0">
-                            <option selected value="ru">Русский</option>
-                            <option value="en">Английский</option>
-                            <option value="zh">Китай</option>
-                            <option value="ja">Японский</option>
-                        </select>
-                        - <select size="1" id="lang_1" name="lang_1">
-                            <option value="ru">Русский</option>
-                            <option selected value="en">Английский</option>
-                        </select><br>
-                        <label for="FirstLang">Сначала Русский: </label><input  type="checkbox" id="FirstLang" name="FirstLang" checked />
+    <hr><div id="descriptionOut"></div>
 
-                        <br>
-                        <button onclick="buffer_add()" >Буфер</button>
-                        <br>
-                        <select size="1" id="ocenka_n" name="ocenka">
-                            <option value="-5">-5</option>
-                            <option value="-4">-4</option>
-                            <option value="-3">-3</option>
-                            <option value="-2">-2</option>
-                            <option value="-1">-1</option>
-                            <option selected disabled>Оценка книги</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                        <button id="ocenka" onclick="Statistic.ocenka()" type="submit">Оценить</button>
-                        <br>
-                        <hr><label for="voiceRusSelect">Голос:</label>
-                        <select id="voiceRusSelect"></select> <br>
-                         <label style='width: 20%;' for="rate">Ско-ть:</label>
-                        <button onclick="Panel.FirstVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
-                        <input id="rateRusRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
-                        <output for="rateRusOut">1</output>
-                        <button onclick="Panel.FirstVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
-                        
-                        <hr>
-                        <div></div>
-                        <label for="voiceEngSelect">Голос:</label>
-                        <select id="voiceEngSelect"></select>
-                        <label style='width: 20%;' for="rate0">Ско-ть:</label>
-                        <button onclick="Panel.SecondVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
-                        <input id="rateEngRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
-                        <output for="rateEngOut">1</output>
-                        <button onclick="Panel.SecondVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
-                        
-                        <hr>
+
   </div>
   <div class="tab-content" id="content-2">
-    <hr><div id="StatisticOut"></div>
+    <hr>
+                           
+
+    <input type='file' accept=".txt,.fb2" onchange='Book.openFile(event)'><br>
+   <input type="checkbox" id="TranslateRusPanel" > <label>Перевод</label><br>
+   <input type="checkbox" id="ReadEngPanel" name="ReadEngPanel"> <label>Читать Перевод</label><br>
+   <input type="checkbox" id="ReadRusPanel" name="ReadRusPanel" checked> <label>Читать оригинал</label><br>
+   <input type="checkbox" id="HideEngPanel" checked name="HideEngPanel" > <label>Спрятать
+       Перевод</label><br>
+   <input type="checkbox" id="HideRusPanel" name="HideRusPanel"> <label>Спрятать
+       оригинал</label><br>
+   <input type="checkbox" id="readYourself" > <label>Читаю Сам</label>
+   <hr>
+   <select size="1" id="lang_0" name="lang_0">
+       <option selected value="ru">Русский</option>
+       <option value="en">Английский</option>
+       <option value="zh">Китай</option>
+       <option value="ja">Японский</option>
+   </select>
+   - <select size="1" id="lang_1" name="lang_1">
+       <option value="ru">Русский</option>
+       <option selected value="en">Английский</option>
+   </select><br>
+   <label for="FirstLang">Сначала Русский: </label><input  type="checkbox" id="FirstLang" name="FirstLang" checked />
+
+   <br>
+   <button onclick="buffer_add()" >Буфер</button>
+   <br>
+   <select size="1" id="ocenka_n" name="ocenka">
+       <option value="-5">-5</option>
+       <option value="-4">-4</option>
+       <option value="-3">-3</option>
+       <option value="-2">-2</option>
+       <option value="-1">-1</option>
+       <option selected disabled>Оценка книги</option>
+       <option value="1">1</option>
+       <option value="2">2</option>
+       <option value="3">3</option>
+       <option value="4">4</option>
+       <option value="5">5</option>
+   </select>
+   <button id="ocenka" onclick="Statistic.ocenka()" type="submit">Оценить</button>
+   <br>
+   <hr><label for="voiceRusSelect">Голос:</label>
+   <select id="voiceRusSelect"></select> <br>
+    <label style='width: 20%;' for="rate">Ско-ть:</label>
+   <button onclick="Panel.FirstVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
+   <input id="rateRusRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
+   <output for="rateRusOut">1</output>
+   <button onclick="Panel.FirstVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
+   
+   <hr>
+   <div></div>
+   <label for="voiceEngSelect">Голос:</label>
+   <select id="voiceEngSelect"></select>
+   <label style='width: 20%;' for="rate0">Ско-ть:</label>
+   <button onclick="Panel.SecondVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
+   <input id="rateEngRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
+   <output for="rateEngOut">1</output>
+   <button onclick="Panel.SecondVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
+   
+   <hr>
   </div>
   <div class="tab-content" id="content-3">
-                           <button id="ocenka" onclick="location.reload();" type="submit">Restart</button>
-                        <button id="RestartBook" onclick="Book.reReadBook();" type="submit">Restart Book</button><br>
-                        <button id="RestartSpeeker" onclick="Speeker.ttsList();" type="submit">Restart Speeker</button><br>
-  </div>
+    <hr><div id="StatisticOut"></div>
+    </div>
+  <div class="tab-content" id="content-4">
+    <button id="ocenka" onclick="location.reload();" type="submit">Restart</button><br>
+    <button id="RestartBook" onclick="Book.reReadBook();" type="submit">Restart Book</button><br>
+    <button id="RestartBooklocalStorage" onclick="localStorage.clear();" type="submit">Очистить Хранилище</button><br>
+                            <button id="RestartSpeeker" onclick="Speeker.ttsList();" type="submit">Restart Speeker</button>
+                            <button id="RestartSpeeker" onclick="testWrite();" type="submit">Get</button><br>
+
+
+ </div>
 </div>
 
     

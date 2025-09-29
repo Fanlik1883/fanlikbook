@@ -199,19 +199,6 @@ class CookiesClass {
 
     }
 
-    setCookieServer(name, data) {
-     //   setCookie(name, data, { expires: new Date(Date.now() + 86400 * 1000 * 30 * 12), path: '/'  })
-        var cookie='foo=bar; Path=/; Expires=Tue, 21 Oct 2026 00:00:00 GMT';
-cordova.plugin.http.setCookie('allfilmbook.ru', cookie, options);
-//'foo=bar; Domain=example.com; Path=/; Expires=Tue, 21 Oct 2025 00:00:00 GMT'
-//cordova.plugin.http.setCookie('allfilmbook.ru', 'cookies=111;')
-
-
-    }
-
-
-
-
 }
 
 
@@ -223,6 +210,7 @@ class MainBookClass {
         this.book_mass_eng = []
         this.num
         this.name_file
+        this.bookhead = {}
         this.map = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', 'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'E', 'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch', 'Ь': '', 'Ы': 'Y', 'Ъ': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya', '[': '_', ']': '_', '-': '_', '.': '_', ' ': '_', '	': '_' };
 
 
@@ -235,7 +223,7 @@ class MainBookClass {
 
     reReadBook(){
         localStorage.removeItem(this.book_id + "file_text");
-        get_book();
+        this.get_book();
     }
 
     get_book() {
@@ -248,14 +236,12 @@ class MainBookClass {
         if (bookZip = localStorage.getItem(this.book_id + "file_text")) {
             bookZip = this.decompressData(bookZip);
 
-
-            try {
-                this.book_mass_rus = JSON.parse(bookZip);
-            } catch (e) {
+                if(bookZip.substring(0, 10).search(/xml/i)>0)
+                {  Book.mass_to_text(bookZip)   ;  
+                } else{
                 localStorage.clear();
                 this.get_book();
-            }
-
+                }
             Panel.NumberLinesBookSlider.value = this.book_mass_rus.length
 
             if (this.book_mass_rus.length < 100) {
@@ -294,8 +280,15 @@ class MainBookClass {
                 type: 'fb2'
             }).success(function (data) {
                 Book.name_file = Book.book_id
-
                 var json = data
+               var tmp = Book.compressData(json); 
+                try {
+                    localStorage.setItem(Book.book_id + "file_text", tmp);
+                } catch (e) {   
+                    localStorage.clear();
+                    localStorage.setItem(Book.book_id + "file_text", tmp);
+                }
+                tmp ='';
                 Book.mass_to_text(json)
                 //---------------------------------------
                 Panel.NumberLinesBookSlider.value = Book.book_mass_rus.length
@@ -324,14 +317,6 @@ class MainBookClass {
                     Panel.text_ru.textContent = Book.book_mass_rus[Book.num]
                 }
                 numNext = Book.num + 1
-                var tmp = JSON.stringify(Book.book_mass_rus)
-                tmp = Book.compressData(tmp); 
-                try {
-                    localStorage.setItem(Book.book_id + "file_text", tmp);
-                } catch (e) {   
-                    localStorage.clear();
-                    localStorage.setItem(Book.book_id + "file_text", tmp);
-                }
                 CookiesUp.setCookieMy("file_text_name", Book.name_file)
 
                 $("#PleaseWait").hide()
@@ -398,68 +383,109 @@ class MainBookClass {
 
 
  mass_to_text(json) {
-    var from = json.search("<body>")
-    var from_title = json.search("<book-title>") + 12
+  var Body0=json.indexOf("<body>");
+  var Body1=json.indexOf("</body>")+7;
+  if (Body1<10){Book.reReadBook();location.reload();}
 
-    var end_title = json.search("</book-title>")
-    let Book2 = new Array()
-    this.name_book = json.substring(from_title, end_title)
-    document.title = "Книга - " + this.name_book;
+    var text=json.slice(Body0, Body1); 
+     var head=json.slice( 0,Body0);
+      var foot=json.slice(Body1); 
+      text=text.replace(/<[^>]*?>/ig,'');
+      text=text.replace(/[\'\"]*/,'`');
+      this.bookhead.book=text.split("\n");
+      this.bookhead.book = this.bookhead.book.map(s => s.trim());
+      this.bookhead.book=this.splitArray(this.bookhead.book.filter(n => n))
+      json=head+" "+foot;
+   // json=json.replace(/<body.*<[/]body>/igm,'');
+    
+    
+    var tmp= parseXml(json);
 
-    if (from > 0) {
+ 
+  try{  this.bookhead.description =tmp.FictionBook.description['title-info']} catch{}
+  try{  this.bookhead.img =tmp.FictionBook.binary; } catch{}
+  try{ this.bookhead.title=tmp.FictionBook.description['title-info']['book-title']['#text'];} catch{}
 
-        var to = json.length
-        json = json.substring(from, to)
-    }
-    from = json.search("</body>")
-    if (from > 0) {
-        json = json.substring(0, from + 1)
-    }
-    json = json.replace(/<binary.*?>([\s\S]*?)<\/binary>/gi, ''); // Обрезаем все картинки
-    json = json.replace(/<.+?>/gi, "")
-    json = json.replace(/—/g, "-")
-
-      Book2 = this.splitBook(json);
-
-    this.book_mass_rus = Book2.map((s) => s.trim())
-    Book2 = [];
+     document.title = "Книга - " + this.bookhead.title;
+    this.book_mass_rus =this.bookhead.book;
     this.book_mass_rus = this.book_mass_rus.filter(Boolean)
     CookiesUp.setCookieMy(this.book_id + '_title', this.name_book);
+    this.putDescription()
+
+
 
 }
 
- splitBook(bookString) {
-        const MAX_LENGTH = 180;
-        const MIN_LENGTH = 60;
-        const MIN_END_LENGTH = 30;
-
-        let sentences = bookString.match(/[^.!?]+[.!?]+/g);
-        let result = [];
-        let currentLine = "";
-
-        for (let i = 0; i < sentences.length; i++) {
-            let sentence = sentences[i].trim();
-
-            if ((currentLine.length + sentence.length) <= MAX_LENGTH) {
-                if (currentLine) {
-                    currentLine += " " + sentence;
-                } else {
-                    currentLine = sentence; //.replace(/\n/g, '')
-                }
-            } else {
-
-                result.push(currentLine);
-
-                currentLine = sentence;
+  putDescription(){
+        if (typeof this.bookhead == "undefined") return 0;
+        
+        var descriptionOut = document.getElementById("descriptionOut")
+        var tmp='';
+        tmp='<h2>'+Book.bookhead['title']+'</h2>';
+        try{    
+            if(Book.bookhead['img'].constructor==Array){
+Book.bookhead['img'].forEach(pic => { tmp+='<img src="data:'+pic['content-type']+';base64, '+pic['#text']+'" class="imgDescription" /><br>'})
             }
-        }
+            else
+            if (Book.bookhead['img'] !=undefined &&'#text' in Book.bookhead['img'])  tmp+='<img src="data:'+Book.bookhead['img']['content-type']+';base64, '+Book.bookhead['img']['#text']+'" class="imgDescription" /><br>'
 
-        if (currentLine) {
-            result.push(currentLine);
-        }
+        } catch(error){//tmp+='<img src="'+Book.book_id+'" class="imgDescription" alt="Red dot" /><br>'
 
-        return result;
-    }
+        }
+        
+        try{if (typeof Book.bookhead['description']['author'][0] == "undefined")    { 
+            var tmp2=Book.bookhead['description']['author'];        
+            tmp+='Автор: ';
+            if ('first-name'in tmp2)tmp+=tmp2['first-name']['#text']+' ';
+            if ('middle-name' in tmp2)tmp+=tmp2['middle-name']['#text']+' ';
+            if ('last-name' in tmp2)tmp+=tmp2['last-name']['#text']+' ';
+            tmp+='<br>';
+        }
+        else {
+            tmp+='Авторы: <br>';
+            Book.bookhead['description']['author'].forEach((text) => { 
+                if ('first-name'in text)tmp+=text['first-name']['#text']+' ';
+                if ('middle-name' in text)tmp+=text['middle-name']['#text']+' ';
+                if ('last-name' in text)tmp+=text['last-name']['#text']+' ';    
+                tmp+='<br>';
+            })
+        }
+        } catch(error){}
+       try{ if ('sequence' in Book.bookhead['description']) if ('name' in Book.bookhead['description']['sequence'])   tmp+='Серия: '+Book.bookhead['description']['sequence']['name']+", №"+Book.bookhead['description']['sequence']['number']+'<br>'; } catch(error){} 
+       tmp+='<hr>Жанр: ';
+        try{ if ('genre' in Book.bookhead['description']) Book.bookhead['description']['genre'].forEach((text) => { tmp+=text['#text']+' '; })} catch(error){}
+ try{
+        tmp+='<hr>Анотация: <br>';
+        if('annotation'in Book.bookhead['description']){
+        if ('p' in Book.bookhead['description']['annotation'])
+        {
+            if ('0' in Book.bookhead['description']['annotation']['p']){
+                Book.bookhead['description']['annotation']['p'].forEach((text) => { tmp+=text['#text']+' <br>'; })}
+            else {
+                tmp+=Book.bookhead['description']['annotation']['p']['#text']+' <br>'
+            }
+        }}
+        tmp+='<hr>Дата создания: '+Book.bookhead['description']['date']['value']+'<br>';
+   } catch(error){}
+        descriptionOut.innerHTML=tmp;
+  }
+
+  splitArray(bookArray) {
+    const MAX_LENGTH = 150;
+    var outArray= new Array;
+    bookArray.forEach((ArrTmp) => {
+        if (typeof ArrTmp == "undefined") return outArray;
+        if(ArrTmp.length>MAX_LENGTH) {
+                    let sentences = ArrTmp.match(/[^.!?]+[.!?]+/g);
+            outArray = outArray.concat(sentences)
+        }
+        else
+        outArray.push(ArrTmp)
+
+     })
+     return outArray;
+  }
+
 
      buffer_add() {
     cordova.plugins.clipboard.paste(function (text) {
@@ -739,7 +765,11 @@ class StatisticClass {
                         else out+= "<tr class='tableStatItogi'><td>Худож.</td><td>"+item['HudMin']+" мин.</td><td>Обучающие</td><td>"+item['ObuchMin']+" мин.</td><td></td></tr>";
                     })
                     Panel.StatisticOutElement.innerHTML=out+"</table></div>"
-            })
+            }).fail(function() {
+        setTimeout(() => { Statistic.GetStatistic(); }, 10 * 1000) 
+     })
+        
+        
             return;
         
     }
@@ -753,12 +783,61 @@ class StatisticClass {
 
 
 
+ class FilesClass {
+    constructor() {
+                //    this.dirEntry= this.GetDir();
+                   
+                   
+    }
+
+    GetDir(){
+        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dirEntr) { return dirEntr;}, onError);
+    }
+
+    GetFile(fileName,isCreate) {
+        this.dirEntry.getFile(fileName, {create: isCreate, exclusive: false}, function(fileEntry) { return fileEntry; }, onError);
+    }
+
+    writeFile(fileName,texts) {
+        fileEntry= this.GetFile(fileName,true);
+        dataObj = new Blob([texts], { type: 'text/plain' });
+        fileEntry.createWriter(function (fileWriter) {
+            fileWriter.onwriteend = function() {
+                console.log("Successful file write...");
+            };
+            fileWriter.onerror = function (e) {
+                console.log("Failed file write: " + e.toString());
+            };
+            fileWriter.write(dataObj);
+        });
+    }
+
+    readFile(fileName) {
+        fileEntry= this.GetFile(fileName,false);
+        fileEntry.file(function (file) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                console.log("Successful file read: " + this.result);
+            };
+            reader.readAsText(file);
+
+        }, onError);
+    }
+
+    testWrite(){
+        Files.writeFile('2.txt','FB2');
+        Files.readFile('2.txt');
+    }
+
+
+}
+
+
  class VarClass {
     constructor() {
                     this.ErrorLoadTts=0;
     }
 }
-
 
 
 
@@ -853,6 +932,7 @@ const Speeker = new SpeakClass;
 const TranslateBook = new TranslateBookClass;
 const Statistic = new StatisticClass;
 const Vars = new VarClass;
+const Files = new FilesClass;
 setTimeout(function() {
 CookiesUp.start_cookie()
 if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатывает
@@ -885,3 +965,8 @@ function updateReadList() {
         i++;
     }
 }
+
+
+
+
+function onError (){}

@@ -121,7 +121,8 @@ button:disabled {
 
   #tab-btn-1:checked~#content-1,
   #tab-btn-2:checked~#content-2,
-  #tab-btn-3:checked~#content-3 {
+  #tab-btn-3:checked~#content-3,
+  #tab-btn-4:checked~#content-4 {
     display: block;
   }
 
@@ -141,4 +142,8 @@ button:disabled {
   cursor: default;
   color: #fff;
   background-color: #0d6efd;
+}
+
+.Description{
+  width: 100%;
 }
