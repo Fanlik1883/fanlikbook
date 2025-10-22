@@ -236,12 +236,13 @@ class MainBookClass {
         if (bookZip = localStorage.getItem(this.book_id + "file_text")) {
             bookZip = this.decompressData(bookZip);
 
-                if(bookZip.substring(0, 10).search(/xml/i)>0)
-                {  Book.mass_to_text(bookZip)   ;  
-                } else{
-                localStorage.clear();
-                this.get_book();
-                }
+              //  if(bookZip.substring(0, 10).search(/xml/i)>0)
+               // {  
+                    Book.mass_to_text(bookZip)   ;  
+          //      } else{
+            //    localStorage.clear();
+          //      this.get_book();
+           //     }
             Panel.NumberLinesBookSlider.value = this.book_mass_rus.length
 
             if (this.book_mass_rus.length < 100) {

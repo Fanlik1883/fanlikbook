@@ -1,3 +1,4 @@
+var errorCount=0;
 class ViewBookClass {
     constructor() {
         this.BookList()
@@ -45,7 +46,15 @@ class ViewBookClass {
                         }
                     }	
                 }
-                })
+                }).fail(function () {
+                    errorCount++;
+                    if (errorCount < 3) { // задайте максимальное количество повторных попыток
+                        BookList();
+                    } else {
+                        errorCount=0;
+                        alert('Нет доступа в интернет.');
+                    }
+                });
 
 
             }
@@ -255,15 +264,15 @@ function setCookieMy(name,data,local=0) {
 
 
  function addFavoriteBook(idBook) {
-    $.post("https://api.allfilmbook.ru/book/rating/", {
-        UserName: UserName, UserHash: UserHash,
-        book: idBook,
-        tip: 2,
-        r: 1
-    },function(data) {
+    $.post("https://api.allfilmbook.ru/book/rating/", {UserName: UserName, UserHash: UserHash, book: idBook, tip: 2, r: 1   },
+        function(data) {
         document.getElementById("bottonAddFavorite_"+idBook).classList.toggle("hide");
-    })
-}
+        }
+    )
+    $.post("https://api.allfilmbook.ru/book/file/", { UserName: UserName, UserHash: UserHash, id: idBook, unzip: 2 },
+        function(data) { }
+    )
+ }
 
 
     const observer = new IntersectionObserver((entries) => {
