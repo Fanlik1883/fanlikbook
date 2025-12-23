@@ -51,10 +51,10 @@ function AvtorizationPost() { // Отправить запрос
       dates = JSON.parse(data);
         if(dates.answer === 'Ok') {
             CookiesUp.setCookieMy("UserId",1)
-            CookiesUp.setCookieMy("UserHash",dates.hash)
-            CookiesUp.setCookieMy("UserName",login)
+            CookiesUp.setCookieMy("user_hash",dates.hash)
+            CookiesUp.setCookieMy("user_login",login)
 
-            cordova.plugin.http.setCookie(url, "UserName", options);
+            cordova.plugin.http.setCookie(url, "user_login", options);
             location.reload();
         
         }
@@ -65,19 +65,19 @@ function AvtorizationPost() { // Отправить запрос
 }
 
 
-if(GetCookie("fileUser")==null & GetCookie("UserHash")!=null & GetCookie("UserId")!=null){
+if(GetCookie("fileUser")==null & GetCookie("user_hash")!=null & GetCookie("UserId")!=null){
  
-        localStorage.setItem("FileUserHash",GetCookie("UserHash"));
+        localStorage.setItem("FileUserHash",GetCookie("user_hash"));
         localStorage.setItem("FileUserId",GetCookie("UserId"));
         document.cookie = "fileUser=1; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
     }
 
-    if(GetCookie("fileUser")==1 & GetCookie("UserHash")==null){
+    if(GetCookie("fileUser")==1 & GetCookie("user_hash")==null){
   
         tmp = localStorage.getItem("FileUserHash")
         tmp1 = localStorage.getItem("FileUserId")
 
-        document.cookie = "UserHash="+tmp+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
+        document.cookie = "user_hash="+tmp+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
         document.cookie = "UserId="+tmp1+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
     }
 

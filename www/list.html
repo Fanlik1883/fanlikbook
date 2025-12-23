@@ -20,19 +20,12 @@
 
     <body>
         <div id="Avtorization_link"></div>
-        <div style="width: 22%; position: fixed; right: 15px; top: 1thy;"">
-            <select id="typeRazdel">
-                <option value="0">--Подборки--</option>
-                <option value="1">Подборка</option>
-                <option value="2">Оценки +3</option>
-                <option value="3">Избранное</option>
-                <option value="4">Ожидание</option>
-                <option value="5">Избранное</option>
-              </select>
-          <br>
-
-
-              <select id="year" >
+         <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;text-align: right;">
+         <img src='img/menu.png' onclick="ViewBook.SettingsPanelHide('panelSlide');" width='50' height='50'/>
+         <div class="panelSlide hide" id="panelSlide">
+         <div class="menu-item"><span class="menu-text"><input type="text" placeholder="Найти книгу" id="TextSearch" width="10"><img src='img/menu.png' class="bottonsU" onclick="GoSearch();" /></span></div>
+         <div class="menu-item"><span class="menu-text"><input type="text" placeholder="Найти автора" id="IdSearch" width="10"><img src='img/menu.png' class="bottonsU" onclick="GoKinopoisk();" /></span></div>
+         <select id="year" style="width: 100%;" >
                 <option value="0"  selected>--Год--</option>
                 <option value="2025">2025</option>
                 <option value="2024">2024</option>
@@ -49,15 +42,24 @@
                 <option value="2013">2013</option>
                 <option value="2012">2012</option>
                 <option value="2011">2011</option>
-              </select><br>
-              <input type="checkbox" id="rate" > <label>+3 Рейтинг</label><br>  
-            
-            
-    </div>
+          </select>
+          <div class="menu-item"><input type="checkbox" style="transform: scale(2);" id="rate" >+3 Рейтинг</div>
+          <div class="menu-item"><span onclick="SelectType(0);" class="menu-text">------</span> <span style="color: red;"><</span></div>
+          <div class="menu-item"><span onclick="SelectType(1);" class="menu-text">Подборка</span> <img src='img/favorite.png' class="bottonsU" /></div>
+          <div class="menu-item"><span onclick="SelectType(2);" class="menu-text">Оценки +3</span> <img src='img/favorite.png' class="bottonsU" /></div>
+          <div class="menu-item"><span onclick="SelectType(3);" class="menu-text">Избранное</span> <img src='img/favorite.png' class="bottonsU" /></div>
+          <div class="menu-item"><span onclick="SelectType(4);" class="menu-text">Ожидание</span> <img src='img/favorite.png' class="bottonsU" /></div>
+          <div class="menu-item"><span onclick="SelectType(5);" class="menu-text">Избранные авторы</span> <img src='img/favorite.png' class="bottonsU" /></div>
+          
+        </div></div>
+
         <br>
         <div id="ViewPort">
             
          </div>
+
+
+        
          <div id="load-more-button"></div>
         <script src="js/avtoriz.js"></script>
         <script src="js/list.js"></script>

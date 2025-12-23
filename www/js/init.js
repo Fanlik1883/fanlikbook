@@ -222,7 +222,7 @@ class MainBookClass {
     }
 
     reReadBook(){
-        localStorage.removeItem(this.book_id + "file_text");
+       
         this.get_book();
     }
 
@@ -232,30 +232,19 @@ class MainBookClass {
             timeout: 120000
         })
         $("#PleaseWait").show()
-        var bookZip;
-        if (bookZip = localStorage.getItem(this.book_id + "file_text")) {
-            bookZip = this.decompressData(bookZip);
+        readTextFromFile(this.book_id+'.fb2').then(result => {
 
-              //  if(bookZip.substring(0, 10).search(/xml/i)>0)
-               // {  
-                    Book.mass_to_text(bookZip)   ;  
-          //      } else{
-            //    localStorage.clear();
-          //      this.get_book();
-           //     }
-            Panel.NumberLinesBookSlider.value = this.book_mass_rus.length
+        
+            if (result.text.length < 100) goto: ReGetBook;
+            //result.text= this.decompressData(result.text);
+            Book.mass_to_text(result.text)   ;  
+            
 
             if (this.book_mass_rus.length < 100) {
-                const ErrorZipArhiv = this.book_mass_rus.some(item => item.includes("ZipArchive"));
-                const ErrorLoad = this.book_mass_rus.some(item => item.includes("TimeMemoryFunctionLocation"));
 
-                if (ErrorZipArhiv || ErrorLoad) {
-                    localStorage.removeItem(this.book_id + "file_text");
-                    alert("Error: Ошибка Загрузки");
-                    $("#PleaseWait").hide()
-                    return;
-                }
+            goto: ReGetBook;
             }
+            Panel.NumberLinesBookSlider.value = this.book_mass_rus.length
 
             this.name_file = this.book_id
             if (Number(getCookie(this.name_file)) > 0) {
@@ -272,9 +261,11 @@ class MainBookClass {
                 Panel.text_ru.textContent = this.book_mass_rus[this.num]
             }
             numNext = this.num + 1;
+            updateReadList();
             $("#PleaseWait").hide()
-        } else {
-
+        })
+        .catch(error => {
+            ReGetBook:
             $.get("https://api.allfilmbook.ru/book/file/", {
                 id: this.book_id,
                 unzip: 1,
@@ -282,29 +273,18 @@ class MainBookClass {
             }).success(function (data) {
                 Book.name_file = Book.book_id
                 var json = data
-               var tmp = Book.compressData(json); 
-                try {
-                    localStorage.setItem(Book.book_id + "file_text", tmp);
-                } catch (e) {   
-                    localStorage.clear();
-                    localStorage.setItem(Book.book_id + "file_text", tmp);
+           //   var tmp = Book.compressData(json);  
+           
+                if (json.error) {
+                    alert(json.error+': '+json.message);
+                    $("#PleaseWait").hide()
+                    return;
                 }
-                tmp ='';
+                WriteBook(Book.book_id,json);
                 Book.mass_to_text(json)
-                //---------------------------------------
                 Panel.NumberLinesBookSlider.value = Book.book_mass_rus.length
 
-                if (Book.book_mass_rus.length < 100) {
-                    const ErrorZipArhiv = Book.book_mass_rus.some(item => item.includes("ZipArchive"));
-                    const ErrorLoad = Book.book_mass_rus.some(item => item.includes("TimeMemoryFunctionLocation"));
-
-                    if (ErrorZipArhiv || ErrorLoad) {
-                        alert("Error: Ошибка Загрузки");
-                        $("#PleaseWait").hide()
-                        return;
-                    }
-
-                }
+                
                 if (Number(getCookie(Book.name_file)) > 0) {
                     Book.num = Number(getCookie(Book.name_file))
                 } else
@@ -318,16 +298,15 @@ class MainBookClass {
                     Panel.text_ru.textContent = Book.book_mass_rus[Book.num]
                 }
                 numNext = Book.num + 1
-                CookiesUp.setCookieMy("file_text_name", Book.name_file)
 
                 $("#PleaseWait").hide()
+                updateReadList();
             })
-        }
+        
+      
+    });
 
         CookiesUp.setCookieMy('book_id', Book.book_id)
-
-
-        updateReadList();
     }
 
     openFile() {
@@ -386,7 +365,7 @@ class MainBookClass {
  mass_to_text(json) {
   var Body0=json.indexOf("<body>");
   var Body1=json.indexOf("</body>")+7;
-  if (Body1<10){Book.reReadBook();location.reload();}
+  if (Body1<10){$("#PleaseWait").hide();return;}
 
     var text=json.slice(Body0, Body1); 
      var head=json.slice( 0,Body0);
@@ -397,7 +376,7 @@ class MainBookClass {
       this.bookhead.book = this.bookhead.book.map(s => s.trim());
       this.bookhead.book=this.splitArray(this.bookhead.book.filter(n => n))
       json=head+" "+foot;
-   // json=json.replace(/<body.*<[/]body>/igm,'');
+
     
     
     var tmp= parseXml(json);
@@ -568,7 +547,6 @@ class SpeakClass {
         if (Book.book_mass_rus[Book.num] != undefined) {
             Panel.text_ru.textContent = Book.book_mass_rus[Book.num];
             Panel.text_en.textContent = Book.book_mass_eng[Book.num];
-            // Отследить остановку функции
             var out=0;
             Speeker.ReadList.forEach((data,index) => {  
                 if (out==0) {
@@ -593,7 +571,8 @@ class SpeakClass {
         }
 
             Statistic.keeptime(isStart);
-            noSleep.enable();noSleepx = isStart
+            if (document.visibilityState === 'visible' &&  noSleep.enabled==false) { try {  noSleep.enable(); } catch (error) { } }
+            noSleepx = isStart
             CookiesUp.setCookieMy(Book.name_file, Book.num)  // строчный куки
             Panel.NumberLinesBook.value = Book.num
         }
@@ -655,6 +634,8 @@ class SpeakClass {
  }
  speak_pause () {
         TTS.stop();
+        Statistic.errorCoutStatisticRequest=1;
+        Statistic.keeptime(isStart);
         setTimeout(TTS.stop(), 100);
         noSleep.disable()
         noSleepx = 0
@@ -668,6 +649,7 @@ class SpeakClass {
  else {
         if(Panel.text_en.textContent.length==0 && Panel.Translate.checked==true){TranslateBook.TranslateNum(Book.num);}
         else {
+            TTS.stop();
             updateReadList();
             this.Speak();
         
@@ -708,6 +690,8 @@ var voices;
 class StatisticClass {
     constructor() {
                     this.GetStatistic();
+                    this.errorCoutStatisticRequest=0;
+                    this.CoutAddStatistic=0;
     }
     
   keeptime(inputVar=0) {
@@ -722,18 +706,23 @@ class StatisticClass {
         }
         
         
-        var currentTime = new Date().getTime(); // текущее время в миллисекундах
-        var diff = (currentTime - lastTime) / 1000; // разница в секундах
-    
+        var currentTime = new Date().getTime(); 
+
         if (lastTime !== null) {
-            if ((diff > 30 && diff < 80&&inputVar!=isReadYourSelf)||(diff > 3 && diff < 120 && inputVar==isReadYourSelf) ) { 
-                var addTime = Math.floor(diff); 
+            var diff = (currentTime - lastTime) / 1000; 
+            Statistic.CoutAddStatistic+=diff;
+            if ((Statistic.CoutAddStatistic > 30 && Statistic.CoutAddStatistic < 80&&inputVar!=isReadYourSelf)||(Statistic.CoutAddStatistic > 3 && Statistic.CoutAddStatistic < 120 && inputVar==isReadYourSelf||Statistic.errorCoutStatisticRequest>0) ) { 
+                var addTime = Math.floor(Statistic.CoutAddStatistic); 
                 if (addTime==0) addTime=1;
-                $.post("https://api.allfilmbook.ru/book/keeptime/", {id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num }).done(function(data) { })
+                $.post("https://api.allfilmbook.ru/book/keeptime/", {id: Book.book_id, addTime: addTime, UserName: UserName, UserHash: UserHash, last: Book.num }).done(function(data) { Statistic.errorCoutStatisticRequest=0;Statistic.CoutAddStatistic=0;})
+                .fail(function(xhr, status, error) {
+                    Statistic.errorCoutStatisticRequest++;
+                    
+                });
                 lastTime=currentTime;
             }
             else 
-              if((diff > 80 &&inputVar!=isReadYourSelf)||diff > 120 && inputVar==isReadYourSelf) lastTime=currentTime;
+              if((Statistic.CoutAddStatistic > 80 &&inputVar!=isReadYourSelf)||Statistic.CoutAddStatistic > 120 && inputVar==isReadYourSelf) lastTime=currentTime;
            
             }
         else 
@@ -784,67 +773,9 @@ class StatisticClass {
 
 
 
- class FilesClass {
-    constructor() {
-                //    this.dirEntry= this.GetDir();
-                   
-                   
-    }
-
-    GetDir(){
-        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dirEntr) { return dirEntr;}, onError);
-    }
-
-    GetFile(fileName,isCreate) {
-        this.dirEntry.getFile(fileName, {create: isCreate, exclusive: false}, function(fileEntry) { return fileEntry; }, onError);
-    }
-
-    writeFile(fileName,texts) {
-        fileEntry= this.GetFile(fileName,true);
-        dataObj = new Blob([texts], { type: 'text/plain' });
-        fileEntry.createWriter(function (fileWriter) {
-            fileWriter.onwriteend = function() {
-                console.log("Successful file write...");
-            };
-            fileWriter.onerror = function (e) {
-                console.log("Failed file write: " + e.toString());
-            };
-            fileWriter.write(dataObj);
-        });
-    }
-
-    readFile(fileName) {
-        fileEntry= this.GetFile(fileName,false);
-        fileEntry.file(function (file) {
-            var reader = new FileReader();
-            reader.onloadend = function() {
-                console.log("Successful file read: " + this.result);
-            };
-            reader.readAsText(file);
-
-        }, onError);
-    }
-
-    testWrite(){
-        Files.writeFile('2.txt','FB2');
-        Files.readFile('2.txt');
-    }
-
-
-}
-
-
- class VarClass {
-    constructor() {
-                    this.ErrorLoadTts=0;
-    }
-}
-
-
-
 var UserId = getCookie("UserId");
-var UserHash = getCookie("UserHash");
-var UserName = getCookie("UserName");
+var UserHash = getCookie("user_hash");
+var UserName = getCookie("user_login");
 var isStart=1;
 var isStop=0;
 var isUpdate=2;
@@ -873,7 +804,7 @@ var noSleepx = 0
 $.ajaxSetup({ timeout: 5000 })
 
 
-//*******************************
+
 
 const queryOpts = {
     name: "clipboard-read",
@@ -906,6 +837,11 @@ function updateOutputs() {
     Panel.rateEngOut.textContent = Panel.rateEngRange.value
 }
 
+class VarClass {
+    constructor() {
+                    this.ErrorLoadTts=0;
+    }
+}
 
 
 
@@ -933,7 +869,7 @@ const Speeker = new SpeakClass;
 const TranslateBook = new TranslateBookClass;
 const Statistic = new StatisticClass;
 const Vars = new VarClass;
-const Files = new FilesClass;
+
 setTimeout(function() {
 CookiesUp.start_cookie()
 if (Book.book_id > 1) { Book.get_book() } //Не всегда срабатывает
@@ -970,4 +906,102 @@ function updateReadList() {
 
 
 
-function onError (){}
+
+
+
+function writeTextToFile(fileName, text, isAppend = false) {
+    return new Promise((resolve, reject) => {
+        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function(dirEntry) {
+            const dataObj = new Blob([text], { type: 'text/plain' });
+            
+            dirEntry.getFile(fileName, {create: true, exclusive: false}, function(fileEntry) {
+                fileEntry.createWriter(function(fileWriter) {
+                    fileWriter.onwrite = function() {
+                        resolve(fileEntry);
+                    };
+
+                    fileWriter.onerror = function(e) {
+                        console.log("Failed file write: " + e.toString());
+                        reject(e);
+                    };
+
+                    if (isAppend) {
+                        try { 
+                            fileWriter.seek(fileWriter.length);  
+                        } catch (e) {
+                            console.log("file doesn't exist!"); 
+                        }
+                    }
+                    
+                    fileWriter.write(dataObj);
+                });
+            }, function(error) {
+                console.log("Error creating file: " + error.toString());
+                reject(error);
+            });
+        }, function(error) {
+            console.log("Error resolving directory: " + error.toString());
+            reject(error);
+        });
+    });
+}0
+
+function readTextFromFile(fileName) {
+    return new Promise((resolve, reject) => {
+        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function(dirEntry) {
+            dirEntry.getFile(fileName, {create: false}, function(fileEntry) {
+                fileEntry.file(function(file) {
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        resolve({
+                            text: this.result,
+                            fileEntry: fileEntry,
+                            fullPath: fileEntry.fullPath
+                        });
+                    };
+                    
+                    reader.onerror = function(e) {
+                        console.log("Failed file read: " + e.toString());
+                        reject(e);
+                    };
+                    
+                    reader.readAsText(file);
+                }, function(error) {
+                    console.log("Error reading file: " + error.toString());
+                    reject(error);
+                });
+            }, function(error) {
+                console.log("Error getting file: " + error.toString());
+                reject(error);
+            });
+        }, function(error) {
+            console.log("Error resolving directory: " + error.toString());
+            reject(error);
+        });
+    });
+}
+
+
+
+function WriteBook(id,text) {
+    writeTextToFile(id+'.fb2', text)
+        .then(() => {
+            console.log("Файл записан успешно");
+        })
+        .catch(error => {
+            console.error("Ошибка:", error);
+        });
+}
+
+function КeadBook(id) {
+    readTextFromFile(id+'.fb2')
+        .then(result => {
+            console.log("Содержимое:", result.text);
+        })
+        .catch(error => {
+
+        });
+}
+
+
+
