@@ -1,12 +1,14 @@
 let errorCount=0;
 class ViewBookClass {
     constructor() {
+        this.ViewPort = document.getElementById('ViewPort');
         this.BookList()
+
 
     }
      BookList() {
                 let params = new URLSearchParams(document.location.search);
-                let req_out = document.getElementById('ViewPort');
+               // let req_out = this.ViewPort;
                 let rateR=0;
                 if (Data.rateBook===true) rateR=3;
                 if(params.get('AvtorId')){Data.datas=params.get('AvtorId');Data.type=7;}
@@ -30,7 +32,7 @@ class ViewBookClass {
                                             <div class='overlay' id='overlay_"+item['book_id']+"'>"+item['rate']+"</div> \
                                             <div class='desc hide' id='desc_"+item['book_id']+"' ></div> \
                         l                   </div>");
-                        ViewPort.append(liLast); 	
+                        ViewBook.ViewPort.append(liLast); 	
 	
                     }
                 
@@ -68,7 +70,7 @@ class ViewBookClass {
             req_out.insertAdjacentHTML('afterBegin','<img  src=\'img/read.png\' onclick="openBook('+n+')" class=\'bottons\'>');
             if(Data.type==3 )  req_out.insertAdjacentHTML('beforeEnd','<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>');
             if(Data.type==4)  req_out.insertAdjacentHTML('beforeEnd','<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>');
-            if(Data.type==1 || Data.type==5||Data.type==7||Data.type==8){
+            if(Data.type==1 || Data.type==5||Data.type==7||Data.type==8||Data.type==0){
                 req_out.insertAdjacentHTML('beforeEnd','<img  src=\'img/add-icon-png-2468.png\' id="bottonAddFavorite_'+n+'" onclick="addFavoriteBook('+n+')" class=\'bottons\'><img  src=\'img/add-icon-png-2468.png\' onclick="addWaitBook('+n+')" class=\'bottons\'>');
             }
            req_out.insertAdjacentHTML('beforeEnd',"<br>");
@@ -155,7 +157,7 @@ class DataClass {
     constructor() {
         this.step = getCookie("SaveStep");if (this.step === undefined ||isNaN(this.step) ) {this.step = 0; }
         this.type = getCookie("type");if (this.type === undefined||isNaN(this.type)) {this.type = 0; }
-        this.rateBook = getCookie("rate");if (this.rateBook === undefined||isNaN(this.rateBook)) {this.rateBook = false; }
+        this.rateBook = getCookie("rate");if (this.rateBook === undefined||!this.rateBook) {this.rateBook = false; }
         this.year = getCookie("year");if (this.year === undefined||isNaN(this.year)) {this.year = 0; }
         if (getCookie("SaveiD") === undefined) this.SaveiD=0; else this.SaveiD = getCookie("SaveiD");
         if (getCookie("datas") === undefined) this.datas=0; else this.datas = getCookie("datas");
@@ -190,14 +192,15 @@ selectYear.addEventListener('change', function() {
 });
 selectRateElem = document.getElementById('rate');
 selectRateElem.addEventListener('change', SelectRate);
-selectRateElem.checked = Data.rateBook;
+selectRateElem.checked = Data.rateBook
 
 function SelectYear(value) {
     setCookieMy('year',value);
     setCookieMy('datas',0);Data.datas = 0;
     setCookieMy('SaveiD',0,uselocalPath)
     setCookieMy('SaveStep',0,uselocalPath)
-    location.reload();
+    Data.year=value;
+    SelectReload()
 }
 function GoSearch() {
     setCookieMy('SaveiD',0,uselocalPath)
@@ -209,17 +212,23 @@ function SelectRate() {
     setCookieMy('datas',0); Data.datas = 0;
     setCookieMy('SaveiD',0,uselocalPath)
     setCookieMy('SaveStep',0,uselocalPath)
-    location.reload();
+    SelectReload();
+    
 }
 function SelectType(value) {
     setCookieMy('type',value);
     setCookieMy('datas',Data.datas);
     setCookieMy('SaveStep',0,uselocalPath)
     setCookieMy('SaveiD',0,uselocalPath)
-    location.reload();
+    Data.type=value;
+    SelectReload()
 }
 
-
+function SelectReload() { 
+    ViewBook.ViewPort.innerHTML = '';
+    Data.rateBook =selectRateElem.checked
+    ViewBook.BookList();
+}
 
 
 
