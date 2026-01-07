@@ -147,3 +147,5 @@ button:disabled {
 .imgDescription{
   width: 100%;
 }
+.hide {display:none; z-index: 1;}
+.show {  z-index: 100;}

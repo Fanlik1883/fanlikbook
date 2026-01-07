@@ -1,4 +1,6 @@
 let errorCount=0;
+const TIMEOUTREQUEST=5000;
+$.ajaxSetup({timeout: TIMEOUTREQUEST});
 class ViewBookClass {
     constructor() {
         this.ViewPort = document.getElementById('ViewPort');
@@ -15,7 +17,7 @@ class ViewBookClass {
                 if(params.get('SeqId')){Data.datas=params.get('SeqId');Data.type=8;}
                 if(params.get('SearchTitle')){Data.datas=params.get('SearchTitle');Data.type=9;}
 
-                $.ajaxSetup({timeout: 10000});
+                
                 let finds = '';// 
                 $.post('https://api.allfilmbook.ru/book/list/', {UserName: UserName, UserHash: UserHash,  type: Data.type, rate: rateR , year: Data.year, step: Data.step, data: Data.datas}).success(function (data) {
             
@@ -46,11 +48,13 @@ class ViewBookClass {
                 }
                 }).fail(function () {
                     errorCount++;
-                    if (errorCount < 3) { // задайте максимальное количество повторных попыток
-                        ViewBook.BookList();
+                    if (errorCount < 3) {
+                        if (confirm('Не удалось загрузить данные. Повторить запрос?')) {
+                            ViewBook.BookList();
+                        }
                     } else {
-                        errorCount=0;
-                        alert('Нет доступа в интернет.');
+                        errorCount = 0;
+                        alert('Не удается подключиться к серверу. Проверьте интернет-соединение.');
                     }
                 });
 
@@ -110,7 +114,7 @@ class ViewBookClass {
 }
 
  showDesc (id){
-   if(Data.type<5) {setCookieMy('SaveiD',id,uselocalPath);setCookieMy('SaveStep',Data.step ,uselocalPath);}
+   if(Data.type<5) {setCookieMy('SaveiD',id,USELOCALPATH);setCookieMy('SaveStep',Data.step ,USELOCALPATH);}
 
     if(document.getElementById("desc_"+id).innerHTML==''){
         this.GetDesc(id);
@@ -119,7 +123,7 @@ class ViewBookClass {
 
     }else {
 
-        if(document.getElementById("desc_"+id).classList[1]=="hide"){
+        if (document.getElementById("desc_" + id).classList.contains("hide")) {
            
 
 
@@ -197,29 +201,29 @@ selectRateElem.checked = Data.rateBook
 function SelectYear(value) {
     setCookieMy('year',value);
     setCookieMy('datas',0);Data.datas = 0;
-    setCookieMy('SaveiD',0,uselocalPath)
-    setCookieMy('SaveStep',0,uselocalPath)
+    setCookieMy('SaveiD',0,USELOCALPATH)
+    setCookieMy('SaveStep',0,USELOCALPATH)
     Data.year=value;
     SelectReload()
 }
 function GoSearch() {
-    setCookieMy('SaveiD',0,uselocalPath)
-    setCookieMy('SaveStep',0,uselocalPath)
+    setCookieMy('SaveiD',0,USELOCALPATH)
+    setCookieMy('SaveStep',0,USELOCALPATH)
     location.href='list.html?SearchTitle='+document.getElementById("TextSearch").value;
 }
 function SelectRate() {
     setCookieMy('rate',selectRateElem.checked);
     setCookieMy('datas',0); Data.datas = 0;
-    setCookieMy('SaveiD',0,uselocalPath)
-    setCookieMy('SaveStep',0,uselocalPath)
+    setCookieMy('SaveiD',0,USELOCALPATH)
+    setCookieMy('SaveStep',0,USELOCALPATH)
     SelectReload();
     
 }
 function SelectType(value) {
     setCookieMy('type',value);
     setCookieMy('datas',Data.datas);
-    setCookieMy('SaveStep',0,uselocalPath)
-    setCookieMy('SaveiD',0,uselocalPath)
+    setCookieMy('SaveStep',0,USELOCALPATH)
+    setCookieMy('SaveiD',0,USELOCALPATH)
     Data.type=value;
     SelectReload()
 }
@@ -280,7 +284,7 @@ if(Data.type<=5){
     if ((window.scrollY > document.body.scrollHeight - 1500)&& window.scrollY > 5000 ) {
         let dd = document.getElementById('load-more-button')
         Data.step++;            
-        setCookieMy('SaveStep',Data.step ,uselocalPath);
+        setCookieMy('SaveStep',Data.step ,USELOCALPATH);
         ViewBook.BookList();
         observer.observe(dd);
     }
@@ -294,5 +298,5 @@ if(Data.type<=5){
   setTimeout(() => observer.observe(dd), 10000);
 }
 
-let turnOn=1;uselocalPath=1;
-let turnOff=0;
+const TURNON=1; const USELOCALPATH=1;
+const TURNOFF=0;
