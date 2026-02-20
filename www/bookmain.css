@@ -149,3 +149,590 @@ button:disabled {
 }
 .hide {display:none; z-index: 1;}
 .show {  z-index: 100;}
+
+
+
+
+
+
+
+/******************/
+
+/* Стили для консоли отладки */
+#Console {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 500px;
+    max-height: 400px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    border: 1px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    resize: both;
+    min-width: 300px;
+    min-height: 200px;
+}
+
+#Console .console-header {
+    padding: 8px 12px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+    cursor: move;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+}
+
+#Console .console-header span:first-child {
+    color: #007acc;
+}
+
+#Console .console-close {
+    cursor: pointer;
+    padding: 0 5px;
+    font-size: 16px;
+    color: #888;
+    transition: color 0.2s;
+}
+
+#Console .console-close:hover {
+    color: #ff4444;
+}
+
+#Console .console-logs {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    background: #1e1e1e;
+    scroll-behavior: smooth;
+}
+
+#Console .console-logs::-webkit-scrollbar {
+    width: 8px;
+}
+
+#Console .console-logs::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+#Console .console-logs::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+#Console .console-logs::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+#Console .console-entry {
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-family: inherit;
+    border-left: 3px solid transparent;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#Console .console-log {
+    color: #d4d4d4;
+    border-left-color: #888;
+}
+
+#Console .console-info {
+    color: #4ec9b0;
+    border-left-color: #4ec9b0;
+}
+
+#Console .console-warn {
+    color: #dcdcaa;
+    border-left-color: #dcdcaa;
+    background: rgba(220, 220, 170, 0.1);
+}
+
+#Console .console-error {
+    color: #f48771;
+    border-left-color: #f48771;
+    background: rgba(244, 135, 113, 0.1);
+}
+
+#Console .console-debug {
+    color: #888;
+    border-left-color: #888;
+    font-style: italic;
+}
+
+#Console .console-time {
+    color: #888;
+    margin-right: 8px;
+    font-size: 11px;
+    user-select: none;
+}
+
+#Console .console-error-name {
+    color: #f48771;
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+#Console .console-error-message {
+    color: #f48771;
+}
+
+#Console .console-stack {
+    color: #888;
+    font-size: 11px;
+    margin-top: 4px;
+    padding-left: 12px;
+    border-left: 1px solid #444;
+    white-space: pre-wrap;
+}
+
+#Console .console-controls {
+    padding: 6px;
+    background: #2d2d2d;
+    border-top: 1px solid #3d3d3d;
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+#Console .console-controls button {
+    padding: 4px 8px;
+    background: #3d3d3d;
+    border: 1px solid #4d4d4d;
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+#Console .console-controls button:hover {
+    background: #4d4d4d;
+    border-color: #5d5d5d;
+}
+
+#Console .console-controls button:active {
+    background: #2d2d2d;
+}
+
+.console-toggle-btn {
+    width: 45px;
+    height: 45px;
+    background: #007acc;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 10px rgba(0, 122, 204, 0.5);
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 2px 10px rgba(0, 122, 204, 0.5);
+    }
+    50% {
+        box-shadow: 0 2px 20px rgba(0, 122, 204, 0.8);
+    }
+    100% {
+        box-shadow: 0 2px 10px rgba(0, 122, 204, 0.5);
+    }
+}
+
+.console-toggle-btn:hover {
+    transform: scale(1.1);
+    background: #005a9c;
+}
+
+/* Стили для уведомлений об ошибках голосов */
+.voice-error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+    z-index: 10001;
+    max-width: 350px;
+    font-family: Arial, sans-serif;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    #Console {
+        width: calc(100% - 40px);
+        max-height: 300px;
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .console-toggle-btn {
+        bottom: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
+
+/* Стили для остальных элементов приложения */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+}
+
+
+/* Стили для кнопок управления */
+button {
+    padding: 8px 15px;
+    background: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #005a9c;
+}
+
+button:active {
+    background: #004a8c;
+}
+
+/* Стили для слайдеров */
+input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+
+/* Стили для select элементов */
+select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    margin: 5px 0;
+}
+
+/* Стили для checkbox */
+input[type="checkbox"] {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+/* Стили для панели статистики */
+#StatisticOut {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin: 10px 0;
+    overflow-x: auto;
+}
+
+.tableStatistic {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+    font-size: 14px;
+}
+
+.tableStatistic th {
+    background: #f0f0f0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    font-weight: bold;
+}
+
+.tableStatistic td {
+    padding: 6px;
+    border: 1px solid #ddd;
+}
+
+.tableStatistic tr:hover {
+    background: #f5f5f5;
+}
+
+.tableStatItogi {
+    background: #e8f4f8;
+    font-weight: bold;
+}
+
+/* Стили для описания книги */
+#descriptionOut {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin: 10px 0;
+}
+
+#descriptionOut h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+#descriptionOut hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 15px 0;
+}
+
+.imgDescription {
+    max-width: 200px;
+    max-height: 300px;
+    object-fit: contain;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Стили для индикатора загрузки */
+#PleaseWait {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    z-index: 10002;
+    font-size: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Стили для панелей текста */
+.text-panel {
+    margin: 10px 0;
+}
+
+.hide {
+    display: none !important;
+}
+
+.show {
+    display: block !important;
+}
+
+/* Стили для голосовых элементов */
+.voice-controls {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.voice-controls label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #555;
+    font-size: 14px;
+}
+
+/* Стили для кнопок +/- */
+.rate-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rate-controls button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Стили для прогресс-бара чтения */
+.progress-container {
+    width: 100%;
+    height: 20px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #007acc, #00aaff);
+    transition: width 0.3s ease;
+}
+
+/* Стили для вывода значений */
+output {
+    display: inline-block;
+    min-width: 30px;
+    padding: 2px 5px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 12px;
+}
+
+
+/******------------**/
+
+.slider-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.slider-images {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.slider-images .gallery-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+    text-align: center;
+}
+
+.slider-images img {
+    max-width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+/* Навигационные кнопки */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.slider-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.slider-btn.prev {
+    left: 10px;
+}
+
+.slider-btn.next {
+    right: 10px;
+}
+
+/* Индикаторы */
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.dot.active {
+    background: #333;
+}
+
+/* Счетчик изображений */
+.slider-counter {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 14px;
+    z-index: 10;
+}
+
+
+
+.voice-error-message{
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            max-width: 300px;
+
+}

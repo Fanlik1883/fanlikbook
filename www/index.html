@@ -1,180 +1,198 @@
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <script src="js/jquery.min.js"></script>
-        <script src="js/cookie.min.js" ></script>
-        <script src="js/NoSleep.js"></script>
-        <script src="js/lz-string.min.js"></script>
-        <script src="js/xml2array.js"></script>
-        <script src="js/avtoriz.js"></script>
-        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-        <title>Книги на разных языках</title>
-        <link href="bookmain.css" rel="stylesheet" type="text/css">
-        <link href="css/avtoriz.css" rel="stylesheet" type="text/css">
-        <link rel="icon" type="image/x-icon" href="icons-32.png">
+<!DOCTYPE html>
+<html>
 
-    </head>
+<head>
+    <meta charset="utf-8">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/cookie.min.js"></script>
+    <script src="js/NoSleep.js"></script>
+    <script src="js/lz-string.min.js"></script>
+    <script src="js/xml2array.js"></script>
+    <script src="js/avtoriz.js"></script>
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <title>Книги на разных языках</title>
+    <link href="bookmain.css?v=0.1" rel="stylesheet" type="text/css">
+    <link href="css/avtoriz.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/x-icon" href="icons-32.png">
 
-    <body >
-        <div id="Avtorization_link"></div>
-        <div width="10%" style="position: absolute; left: 10px;top: 20px;"><output onclick="Panel.HideView('SladePage')" id="readedPercent"></output> </div>
-        <div width="" class="hide" id="SladePage"  style="position: absolute; left: 60px;top: 20px;"><input type="number" id="file_nom0"  minlength="1" maxlength="4"  max="4" size="1" width='30px'> <output id="file_nom1"></output> - <output id="file_nommax"></output></div>
-        <div width="19%" style="position: absolute; right: 10px;top: 10px;"><a href="list.html"><img src='img/favorite.png' onclick="" width='50' height='50'/></a></div>
-        <div class="botom_k"  style="position: absolute; bottom: 10px;width: 100%;" >
-                    <button id="back" onclick="Panel.Back()" style="left: 5px;width: 20%;" type="submit"><</button>
-                    <button id="" onclick="Speeker.speak_pause()" style="width: 55%;" type="submit">Stop</button>
-                    <button id="forward" style="right: 5px;width: 20%;" onclick="Panel.Forward()" type="submit"> > </button>
-        </div>
+</head>
+
+<body>
+    <div id="Avtorization_link"></div>
+    <div width="10%" style="position: absolute; left: 10px;top: 20px;"><output onclick="Panel.HideView('SladePage')"
+            id="readedPercent"></output> </div>
+    <div width="" class="hide" id="SladePage" style="position: absolute; left: 60px;top: 20px;"><input type="number"
+            id="file_nom0" minlength="1" maxlength="4" max="4" size="1" width='30px'> <output id="file_nom1"></output> -
+        <output id="file_nommax"></output></div>
+    <div width="19%" style="position: absolute; right: 10px;top: 10px;"><a href="list.html"><img src='img/favorite.png'
+                onclick="" width='50' height='50' /></a></div>
+    <div class="botom_k" style="position: absolute; bottom: 10px;width: 100%;">
+        <button id="back" onclick="Panel.Back()" style="left: 5px;width: 45%;" type="submit">
+            <</button>
+                
+                <button id="forward" style="right: 5px;width: 45%;" onclick="Panel.Forward()" type="submit"> > </button>
+    </div>
 
 
     <table width="100%" height="100%">
         <tbody>
-        <tr height="45%;" id="textPanelEN">
-            <td class="text_eng"   onclick="Speeker.SpeakStart()">
-                <div id="text_en">Английский</div>
-            </td>
-        </tr>
-        <tr height="45%"  id="textPanelRU">
-            <td class="text_rus" onclick="Speeker.SpeakStart()">
-                <div id="text_ru">Русский.<br></div>
-            </td>
-        </tr>
+            <tr height="45%;" id="textPanelEN">
+                <td class="text_eng" onclick="Speeker.SpeakCheckStartStop()">
+                    <div id="text_en">Английский</div>
+                </td>
+            </tr>
+            <tr height="45%" id="textPanelRU">
+                <td class="text_rus" onclick="Speeker.SpeakCheckStartStop()">
+                    <div id="text_ru">Русский.<br></div>
+                </td>
+            </tr>
 
 
         </tbody>
     </table>
     <br>
-<div class="tab">
-  <input checked id="tab-btn-1" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-1">О книге</label>
-  <input id="tab-btn-2" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-2">Настройки</label>
-  <input id="tab-btn-3" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-3">Статистика</label>
-  <input id="tab-btn-4" name="tab-btn" type="radio" value="">
-  <label for="tab-btn-4">Тесты</label>
-  <div class="tab-content" id="content-1">
+    <div class="tab">
+        <input checked id="tab-btn-1" name="tab-btn" type="radio" value="">
+        <label for="tab-btn-1">О книге</label>
+        <input id="tab-btn-2" name="tab-btn" type="radio" value="">
+        <label for="tab-btn-2">Настройки</label>
+        <input id="tab-btn-3" name="tab-btn" type="radio" value="">
+        <label for="tab-btn-3">Статистика</label>
+        <input id="tab-btn-4" name="tab-btn" type="radio" value="">
+        <label for="tab-btn-4">Тесты</label>
+        <div class="tab-content" id="content-1">
 
-    <hr><div id="descriptionOut"></div>
+            <hr>
+            <h2 id="HeadNameOut"></h2>
+            <div id="imageOut" class="slider-container"></div>
+            <div id="descriptionOut"></div>
 
 
-  </div>
-  <div class="tab-content" id="content-2">
-    <hr>
-                           
+        </div>
+        <div class="tab-content" id="content-2">
+            <hr>
 
-    <input type='file' accept=".txt,.fb2" onchange='Book.openFile(event)'><br>
-   <input type="checkbox" id="TranslateRusPanel" > <label>Перевод</label><br>
-   <input type="checkbox" id="ReadEngPanel" name="ReadEngPanel"> <label>Читать Перевод</label><br>
-   <input type="checkbox" id="ReadRusPanel" name="ReadRusPanel" checked> <label>Читать оригинал</label><br>
-   <input type="checkbox" id="HideEngPanel" checked name="HideEngPanel" > <label>Спрятать
-       Перевод</label><br>
-   <input type="checkbox" id="HideRusPanel" name="HideRusPanel"> <label>Спрятать
-       оригинал</label><br>
-   <input type="checkbox" id="readYourself" > <label>Читаю Сам</label>
-   <hr>
-   <select size="1" id="lang_0" name="lang_0">
-       <option selected value="ru">Русский</option>
-       <option value="en">Английский</option>
-       <option value="zh">Китай</option>
-       <option value="ja">Японский</option>
-   </select>
-   - <select size="1" id="lang_1" name="lang_1">
-       <option value="ru">Русский</option>
-       <option selected value="en">Английский</option>
-   </select><br>
-   <label for="FirstLang">Сначала Русский: </label><input  type="checkbox" id="FirstLang" name="FirstLang" checked />
 
-   <br>
-   <button onclick="buffer_add()" >Буфер</button>
-   <br>
-   <select size="1" id="ocenka_n" name="ocenka">
-       <option value="-5">-5</option>
-       <option value="-4">-4</option>
-       <option value="-3">-3</option>
-       <option value="-2">-2</option>
-       <option value="-1">-1</option>
-       <option selected disabled>Оценка книги</option>
-       <option value="1">1</option>
-       <option value="2">2</option>
-       <option value="3">3</option>
-       <option value="4">4</option>
-       <option value="5">5</option>
-   </select>
-   <button id="ocenka" onclick="Statistic.ocenka()" type="submit">Оценить</button>
-   <br>
-   <hr><label for="voiceRusSelect">Голос:</label>
-   <select id="voiceRusSelect"></select> <br>
-    <label style='width: 20%;' for="rate">Ско-ть:</label>
-   <button onclick="Panel.FirstVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
-   <input id="rateRusRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
-   <output for="rateRusOut">1</output>
-   <button onclick="Panel.FirstVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
-   
-   <hr>
-   <div></div>
-   <label for="voiceEngSelect">Голос:</label>
-   <select id="voiceEngSelect"></select>
-   <label style='width: 20%;' for="rate0">Ско-ть:</label>
-   <button onclick="Panel.SecondVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
-   <input id="rateEngRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
-   <output for="rateEngOut">1</output>
-   <button onclick="Panel.SecondVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
-   
-   <hr>
-  </div>
-  <div class="tab-content" id="content-3">
-    <hr><div id="StatisticOut"></div>
+            <input type='file' accept=".txt,.fb2" onchange='Book.openFile(event)'><br>
+            <input type="checkbox" id="TranslateRusPanel"> <label>Перевод</label><br>
+            <input type="checkbox" id="ReadEngPanel" name="ReadEngPanel"> <label>Читать Перевод</label><br>
+            <input type="checkbox" id="ReadRusPanel" name="ReadRusPanel" checked> <label>Читать оригинал</label><br>
+            <input type="checkbox" id="HideEngPanel" checked name="HideEngPanel"> <label>Спрятать
+                Перевод</label><br>
+            <input type="checkbox" id="HideRusPanel" name="HideRusPanel"> <label>Спрятать
+                оригинал</label><br>
+            <input type="checkbox" id="readYourself"> <label>Читаю Сам</label>
+            <hr>
+            <select size="1" id="lang_0" name="lang_0">
+                <option selected value="ru">Русский</option>
+                <option value="en">Английский</option>
+                <option value="zh">Китай</option>
+                <option value="ja">Японский</option>
+            </select>
+            - <select size="1" id="lang_1" name="lang_1">
+                <option value="ru">Русский</option>
+                <option selected value="en">Английский</option>
+            </select><br>
+            <label for="FirstLang">Сначала Русский: </label><input type="checkbox" id="FirstLang" name="FirstLang"
+                checked />
+
+            <br>
+            <button onclick="buffer_add()">Буфер</button>
+            <br>
+            <select size="1" id="ocenka_n" name="ocenka">
+                <option value="-5">-5</option>
+                <option value="-4">-4</option>
+                <option value="-3">-3</option>
+                <option value="-2">-2</option>
+                <option value="-1">-1</option>
+                <option selected disabled>Оценка книги</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <button id="ocenka" onclick="Statistic.ocenka()" type="submit">Оценить</button>
+            <br>
+            <hr><label for="voiceRusSelect">Голос:</label>
+            <select id="voiceRusSelect"></select> <br>
+            <label style='width: 20%;' for="rate">Ско-ть:</label>
+            <button onclick="Panel.FirstVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
+            <input id="rateRusRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
+            <output for="rateRusOut">1</output>
+            <button onclick="Panel.FirstVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
+
+            <hr>
+            <div></div>
+            <label for="voiceEngSelect">Голос:</label>
+            <select id="voiceEngSelect"></select>
+            <label style='width: 20%;' for="rate0">Ско-ть:</label>
+            <button onclick="Panel.SecondVoiceRateMinus()" style='width: 30%;' type="submit">-</button>
+            <input id="rateEngRange" type="range" style='display: none;' min="0.1" max="3" step="0.1" value="1">
+            <output for="rateEngOut">1</output>
+            <button onclick="Panel.SecondVoiceRatePlus()" style='width: 30%;' type="submit">+</button>
+
+            <hr>
+        </div>
+        <div class="tab-content" id="content-3">
+            <hr>
+            <div id="StatisticOut">
+            </div>
+
+        </div>
+        <div class="tab-content" id="content-4">
+            <button id="ocenka" onclick="location.reload();" type="submit">Restart</button><br>
+            <div id="Console"></div>
+            <button id="console-toggle-btn" onclick="Console.toggle()" class="console-toggle-btn">📋</button>
+        </div>
     </div>
-  <div class="tab-content" id="content-4">
-    <button id="ocenka" onclick="location.reload();" type="submit">Restart</button><br>
- </div>
-</div>
-
-    
 
 
 
-<!------------ Форма добавления Пользователя  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-<div class="dm-overlay" id="Registration_Head">
-    <div class="dm-table">
-        <div class="dm-cell">
-            <div class="dm-modal">
 
-                <h3>Регистрация пользователя</h3>Логин:<input id='Registration_login' type='text' size='40'><br>
-                Пароль:<input id='Registration_password' type='password' size='40'><br>
-                <br><a href='#' onclick='RegistrationPost()'>Добавить</a>
-                <a href='#' onclick='AddUser_ShowHide()'>Закрыть</a>
+    <!------------ Форма добавления Пользователя  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
+    <div class="dm-overlay" id="Registration_Head">
+        <div class="dm-table">
+            <div class="dm-cell">
+                <div class="dm-modal">
+
+                    <h3>Регистрация пользователя</h3>Логин:<input id='Registration_login' type='text' size='40'><br>
+                    Пароль:<input id='Registration_password' type='password' size='40'><br>
+                    <br><a href='#' onclick='RegistrationPost()'>Добавить</a>
+                    <a href='#' onclick='AddUser_ShowHide()'>Закрыть</a>
+
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- ххххххххххххххххххххх Форма добавления Пользователя   ххххххххххххххххххххххххххххххххххххххххх -->
+    <!-- ххххххххххххххххххххх Форма добавления Пользователя   ххххххххххххххххххххххххххххххххххххххххх -->
 
 
-<!------------ Форма добавления Авторизации  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<div class="dm-overlay" id="Avtorization_Head">
-    <div class="dm-table">
-        <div class="dm-cell">
-            <div class="dm-modal">
-                <h3>Авторизация</h3>Логин:<input id='Avtorization_login' type='text' size='40'><br>
-                Пароль:<input id='Avtorization_password' type='password' size='40'><br>
-                <br><a href='#' onclick='AvtorizationPost()'>Войти</a>
-                <a href='#' onclick='Avtorization_ShowHide()'>Закрыть</a>
+    <!------------ Форма добавления Авторизации  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <div class="dm-overlay" id="Avtorization_Head">
+        <div class="dm-table">
+            <div class="dm-cell">
+                <div class="dm-modal">
+                    <h3>Авторизация</h3>Логин:<input id='Avtorization_login' type='text' size='40'><br>
+                    Пароль:<input id='Avtorization_password' type='password' size='40'><br>
+                    <br><a href='#' onclick='AvtorizationPost()'>Войти</a>
+                    <a href='#' onclick='Avtorization_ShowHide()'>Закрыть</a>
 
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- ххххххххххххххххххххх Форма добавления Пользователя   ххххххххххххххххххххххххххххххххххххххххх -->
-<div id='PleaseWait' name='PleaseWait' style='display: none;position: absolute;top: 50%;right: 50%;'><img src='img/load.gif' width='50' height='50'/></div>
-<script type="text/javascript" charset="utf-8" src="cordova.js"></script> 
-       <script  src="js/init.js?v=0.001"></script>
-  
-    </body>
+    <!-- ххххххххххххххххххххх Форма добавления Пользователя   ххххххххххххххххххххххххххххххххххххххххх -->
+    <div id='PleaseWait' name='PleaseWait' style='display: none;position: absolute;top: 50%;right: 50%;'><img
+            src='img/load.gif' width='50' height='50' /></div>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script src="js/image-manager.js"></script>
+    <script src="js/init.js?v=0.001"></script>
 
-    </html>
 
+
+</body>
+
+</html>

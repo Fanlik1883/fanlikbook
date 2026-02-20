@@ -74,7 +74,7 @@ class ViewBookClass {
             req_out.insertAdjacentHTML('afterBegin','<img  src=\'img/read.png\' onclick="openBook('+n+')" class=\'bottons\'>');
             if(Data.type==3 )  req_out.insertAdjacentHTML('beforeEnd','<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>');
             if(Data.type==4)  req_out.insertAdjacentHTML('beforeEnd','<img  src=\'img/minus-2-icon-14-256.png\' id="bottonMinusFavorite_'+n+'" onclick="minusFavorites('+n+')" class=\'bottons\'>');
-            if(Data.type==1 || Data.type==5||Data.type==7||Data.type==8||Data.type==0){
+            if(Data.type==1 || Data.type==5||Data.type==7||Data.type==8||Data.type==0||Data.type==9){
                 req_out.insertAdjacentHTML('beforeEnd','<img  src=\'img/add-icon-png-2468.png\' id="bottonAddFavorite_'+n+'" onclick="addFavoriteBook('+n+')" class=\'bottons\'><img  src=\'img/add-icon-png-2468.png\' onclick="addWaitBook('+n+')" class=\'bottons\'>');
             }
            req_out.insertAdjacentHTML('beforeEnd',"<br>");

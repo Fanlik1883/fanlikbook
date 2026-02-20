@@ -28,6 +28,8 @@
     box-sizing: border-box;
     overflow: hidden; /* Скрываем то, что выходит за границы */
     z-index: 10; /* Чтобы было поверх изображения */
+    overflow-y: auto; /* или scroll */
+    overflow-x: hidden; /* чтобы по горизонтали не было скролла */
 }
 
 .desc.hide {
@@ -51,28 +53,29 @@
 
   
 span.short-quality {
-font-size: 30px;
-color: #ffffff;
-margin-top: 30px;
+  font-size: 30px;
+  color: #ffffff;
+  margin-top: 30px;
 }
 
 .short-infobar {
-bottom: 0;
-box-sizing: border-box;
-position: absolute;
-margin-left: -10px;
-width: 100%;
-padding: 0 15px;
-text-align: center
-}
-.overlay {
-position: absolute;
-top: 10px;
-right: 0;
-color:  #ff0000; 
-padding: 0px;
-font-size: 20px;
-/*display: none;*/
+  bottom: 0px;
+  box-sizing: border-box;
+  position: absolute;
+  margin-left: 0px;
+  width: 100%;
+  padding: 0 15px;
+  text-align: center;
+  background: #000000;
+  }
+  .overlay {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  color:  #ff0000; 
+  padding: 0px;
+  font-size: 20px;
+  /*display: none;*/
 }
 
 .show {
@@ -152,5 +155,3 @@ font-size: 20px;
   height: 20px;
 }
 
-
-/******------------**/
