@@ -50,7 +50,6 @@ function AvtorizationPost() { // Отправить запрос
 
       dates = JSON.parse(data);
         if(dates.answer === 'Ok') {
-            CookiesUp.setCookieMy("UserId",1)
             CookiesUp.setCookieMy("user_hash",dates.hash)
             CookiesUp.setCookieMy("user_login",login)
 
@@ -64,22 +63,6 @@ function AvtorizationPost() { // Отправить запрос
 
 }
 
-
-if(GetCookie("fileUser")==null & GetCookie("user_hash")!=null & GetCookie("UserId")!=null){
- 
-        localStorage.setItem("FileUserHash",GetCookie("user_hash"));
-        localStorage.setItem("FileUserId",GetCookie("UserId"));
-        document.cookie = "fileUser=1; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
-    }
-
-    if(GetCookie("fileUser")==1 & GetCookie("user_hash")==null){
-  
-        tmp = localStorage.getItem("FileUserHash")
-        tmp1 = localStorage.getItem("FileUserId")
-
-        document.cookie = "user_hash="+tmp+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
-        document.cookie = "UserId="+tmp1+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
-    }
 
 
     function GetCookie(cookie_name) // Получение куков
